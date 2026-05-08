@@ -32,6 +32,12 @@ export const IconTrash = (p) => <Icon {...p}><path d="M4 7h16M9 7V4h6v3M6 7l1 13
 export const IconMonitor = (p) => <Icon {...p}><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 21h6M12 17v4"/></Icon>
 export const IconLayers = (p) => <Icon {...p}><path d="M12 2 2 7l10 5 10-5z"/><path d="M2 12 12 17 22 12"/><path d="M2 17 12 22 22 17"/></Icon>
 export const IconChevDown = (p) => <Icon {...p}><path d="m6 9 6 6 6-6"/></Icon>
+export const IconPlay = ({ size = 14, style }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={style}><path d="M7 5v14l12-7z"/></svg>
+)
+export const IconPause = ({ size = 14, style }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={style}><rect x="6" y="5" width="4" height="14" rx="0.5"/><rect x="14" y="5" width="4" height="14" rx="0.5"/></svg>
+)
 export const IconImage = (p) => <Icon {...p}><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></Icon>
 export const IconVideo = (p) => <Icon {...p}><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></Icon>
 export const IconType = (p) => <Icon {...p}><path d="M4 7V5h16v2"/><path d="M9 19h6M12 5v14"/></Icon>

@@ -36,21 +36,25 @@ const BOOK_NAMES_ES = {
 
 // --------- Versiones LOCALES (siempre disponibles) ---------
 
+// import.meta.env.BASE_URL = '/' en dev, './' en producción (configurado en vite.config.js).
+// Esto garantiza que las biblias se carguen igual en `npm run dev` y en el .exe instalado.
+const BASE = import.meta.env.BASE_URL || '/'
+
 const LOCAL_VERSIONS = [
   { id: 'rvr1909', short: 'RVR 1909', name: 'Reina-Valera 1909',
-    license: 'Dominio público', type: 'local', file: '/rvr60.json' },
+    license: 'Dominio público', type: 'local', file: BASE + 'rvr60.json' },
   { id: 'nvi', short: 'NVI', name: 'Nueva Versión Internacional',
-    license: 'Bíblica, Inc. · uso devocional', type: 'local', file: '/nvi.json' },
+    license: 'Bíblica, Inc. · uso devocional', type: 'local', file: BASE + 'nvi.json' },
   { id: 'dhh', short: 'DHH', name: 'Dios Habla Hoy',
-    license: 'Sociedades Bíblicas Unidas', type: 'local', file: '/dhh.json' },
+    license: 'Sociedades Bíblicas Unidas', type: 'local', file: BASE + 'dhh.json' },
   { id: 'lbla', short: 'LBLA', name: 'La Biblia de las Américas',
-    license: 'The Lockman Foundation', type: 'local', file: '/lbla.json' },
+    license: 'The Lockman Foundation', type: 'local', file: BASE + 'lbla.json' },
   { id: 'ntv', short: 'NTV', name: 'Nueva Traducción Viviente',
-    license: 'Tyndale House', type: 'local', file: '/ntv.json' },
+    license: 'Tyndale House', type: 'local', file: BASE + 'ntv.json' },
   { id: 'pdt', short: 'PDT', name: 'Palabra de Dios para Todos',
-    license: 'Centro Mundial de Traducción de la Biblia', type: 'local', file: '/pdt.json' },
+    license: 'Centro Mundial de Traducción de la Biblia', type: 'local', file: BASE + 'pdt.json' },
   { id: 'tla', short: 'TLA', name: 'Traducción en Lenguaje Actual',
-    license: 'Sociedades Bíblicas Unidas', type: 'local', file: '/tla.json' },
+    license: 'Sociedades Bíblicas Unidas', type: 'local', file: BASE + 'tla.json' },
 ]
 
 // --------- Estado ---------

@@ -1,16 +1,20 @@
 {
   "name": "eclesia-presenter",
-  "version": "0.1.0",
-  "description": "Software de presentación para iglesias — letras, Biblia, OBS overlay, control móvil",
+  "version": "0.2.0",
+  "description": "Software de presentación para iglesias — Biblia, canciones, lista, proyección OBS",
   "main": "src/main/main.js",
-  "homepage": "https://github.com/tu-usuario/eclesia-presenter",
-  "author": "",
+  "homepage": "https://github.com/Juanalejo01/eclesia-presenter",
+  "author": "Juanalejo01",
   "license": "MIT",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:electron\"",
     "dev:renderer": "vite",
     "dev:electron": "wait-on http://localhost:5173 && electron .",
-    "build": "vite build && electron-builder",
+    "build": "vite build",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder --win portable",
+    "dist:installer": "npm run build && electron-builder --win nsis",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -21,15 +25,56 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.18",
     "concurrently": "^8.2.2",
     "electron": "^29.1.4",
     "electron-builder": "^24.13.3",
+    "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwindcss": "^3.4.1",
-    "autoprefixer": "^10.4.18",
-    "postcss": "^8.4.35",
     "vite": "^5.1.6",
     "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.eclesiapresenter.app",
+    "productName": "EclesiaPresenter",
+    "copyright": "Copyright © 2026 Juanalejo01",
+    "directories": {
+      "output": "dist-electron",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/main/**/*",
+      "src/server/**/*",
+      "dist/renderer/**/*",
+      "package.json",
+      "!**/*.map"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-portable.${ext}",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "EclesiaPresenter"
+    },
+    "publish": null
   }
 }

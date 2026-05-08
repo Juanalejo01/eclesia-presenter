@@ -5,7 +5,9 @@ const { startServer } = require('../server/server')
 const db = require('./database')
 const projection = require('./projection')
 
-const isDev = process.env.NODE_ENV !== 'production'
+// app.isPackaged es true cuando se ejecuta el .exe instalado, false en `npm run dev`.
+// Es más fiable que NODE_ENV porque electron-builder no setea esa variable automáticamente.
+const isDev = !app.isPackaged
 
 let mainWindow = null
 let presenterWindow = null
@@ -54,21 +56,36 @@ function createPresenterWindow() {
       { hash: '/presenter' }
     )
   }
+
+  // CRÍTICO: limpiar la referencia cuando la ventana se cierra,
+  // si no, los IPC handlers intentan usar un objeto destruido y crashean.
+  presenterWindow.on('closed', () => { presenterWindow = null })
+}
+
+// Helper para chequear si una ventana es usable (existe + no destruida).
+function isAlive(win) {
+  return win && !win.isDestroyed()
 }
 
 // IPC: abrir/cerrar ventana proyector
 ipcMain.handle('presenter:open', () => {
-  if (!presenterWindow) createPresenterWindow()
+  if (!isAlive(presenterWindow)) createPresenterWindow()
+  else presenterWindow.focus()
 })
 
 ipcMain.handle('presenter:close', () => {
-  if (presenterWindow) { presenterWindow.close(); presenterWindow = null }
+  if (isAlive(presenterWindow)) presenterWindow.close()
+  presenterWindow = null
 })
 
-// IPC: enviar slide al proyector (legacy: mantiene la ventana old + nueva proyección)
+// IPC: enviar slide al proyector (legacy + proyección nueva)
 ipcMain.on('slide:send', (_event, slideData) => {
-  if (presenterWindow) presenterWindow.webContents.send('slide:receive', slideData)
-  projection.setSlide(slideData)
+  if (isAlive(presenterWindow)) {
+    try { presenterWindow.webContents.send('slide:receive', slideData) }
+    catch (e) { console.warn('slide:send failed:', e.message) }
+  }
+  try { projection.setSlide(slideData) }
+  catch (e) { console.warn('projection.setSlide failed:', e.message) }
 })
 
 // IPC: proyección externa (overlay/background sin red, capturable por OBS)

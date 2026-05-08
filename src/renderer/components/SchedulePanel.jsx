@@ -5,13 +5,20 @@ import {
 import { subscribe as onShortcut } from '../hooks/useShortcuts.js'
 import {
   IconPlus, IconCheck, IconX, IconBible, IconMusic, IconList,
+  IconImage, IconVideo, IconType,
 } from './Icons.jsx'
 
-const TYPE_LABEL = { song: 'Canción', bible: 'Versículo', note: 'Nota', blank: 'Pausa' }
+const TYPE_LABEL = {
+  song: 'Canción', bible: 'Versículo', note: 'Nota',
+  image: 'Imagen', video: 'Video', text: 'Texto', blank: 'Pausa',
+}
 
 function TypeIcon({ type }) {
   if (type === 'bible') return <IconBible size={16} />
   if (type === 'song')  return <IconMusic size={16} />
+  if (type === 'image') return <IconImage size={16} />
+  if (type === 'video') return <IconVideo size={16} />
+  if (type === 'text')  return <IconType size={16} />
   return <IconList size={16} />
 }
 

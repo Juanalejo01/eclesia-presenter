@@ -49,9 +49,9 @@ export function useGlobalShortcuts({ onPanelChange, onBlank, onClearSlide }) {
       const ctrl = e.ctrlKey || e.metaKey
 
       // Cambiar de panel
-      if (ctrl && ['1','2','3','4'].includes(e.key)) {
+      if (ctrl && ['1','2','3','4','5','6','7','8'].includes(e.key)) {
         e.preventDefault()
-        const panels = ['bible', 'songs', 'schedule', 'projection']
+        const panels = ['bible', 'songs', 'schedule', 'image', 'video', 'text', 'projection', 'transmision']
         onPanelChange?.(panels[+e.key - 1])
         return
       }

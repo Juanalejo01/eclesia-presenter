@@ -4,6 +4,10 @@ import BiblePanel from './components/BiblePanel.jsx'
 import SongsPanel from './components/SongsPanel.jsx'
 import SchedulePanel from './components/SchedulePanel.jsx'
 import ProjectionPanel from './components/ProjectionPanel.jsx'
+import ImagePanel from './components/ImagePanel.jsx'
+import VideoPanel from './components/VideoPanel.jsx'
+import TextPanel from './components/TextPanel.jsx'
+import TransmisionPanel from './components/TransmisionPanel.jsx'
 import SlidePreview from './components/SlidePreview.jsx'
 import Topbar from './components/Topbar.jsx'
 import { useGlobalShortcuts } from './hooks/useShortcuts.js'
@@ -11,10 +15,14 @@ import { selectSlide, setLive, useSlideStore } from './services/slideStore.js'
 import { syncFromMain } from './services/themeStore.js'
 
 const PANELS = {
-  bible: BiblePanel,
-  songs: SongsPanel,
-  schedule: SchedulePanel,
-  projection: ProjectionPanel,
+  bible:       BiblePanel,
+  songs:       SongsPanel,
+  schedule:    SchedulePanel,
+  image:       ImagePanel,
+  video:       VideoPanel,
+  text:        TextPanel,
+  projection:  ProjectionPanel,
+  transmision: TransmisionPanel,
 }
 
 const BLANK_SLIDE    = { type: 'blank', text: '', reference: '' }
@@ -33,7 +41,7 @@ export default function App() {
     onClearSlide: () => setLive(null),
   })
 
-  const Panel = PANELS[activePanel]
+  const Panel = PANELS[activePanel] || BiblePanel
 
   return (
     <>

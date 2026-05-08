@@ -2,31 +2,34 @@ import SlideTransition from './SlideTransition.jsx'
 
 /**
  * Renderizador unificado de un slide con tema aplicado.
+ *
+ * El SLIDE puede traer overrides (bgType, bgImage, bgVideo, bgGradient,
+ * bgColor, fontColor) que tienen prioridad sobre el tema global. Esto permite
+ * que paneles como Imagen / Video / Texto fuercen su propio fondo sin alterar
+ * la configuración global del tema.
+ *
  * Usa container queries (cqw) para escalar tipografías proporcionalmente
  * al ancho real del contenedor, asumiendo target 1920×1080.
- *
- * Esto garantiza que la "vista previa del estilo" en ProjectionPanel y la
- * pantalla "EN VIVO" del monitor PGM rendericen idénticamente, solo a
- * diferentes tamaños físicos.
  */
 export default function SlideRenderer({ slide, theme, isBlackout = false }) {
-  const showVideo = theme.bgType === 'video' && theme.bgVideo
+  // Mezcla: el slide puede sobreescribir aspectos visuales del tema global.
+  const eff = mergeThemeWithSlide(theme, slide)
+
+  const showVideo = eff.bgType === 'video' && eff.bgVideo
   const bg =
       isBlackout ? '#000000'
-    : theme.bgType === 'gradient' ? `linear-gradient(135deg, ${theme.bgGradient[0]}, ${theme.bgGradient[1]})`
-    : theme.bgType === 'transparent' ? 'repeating-conic-gradient(#1a1410 0 25%, #2a1f17 0 50%) 50% / 14px 14px'
-    : theme.bgType === 'image' && theme.bgImage ? `url("${theme.bgImage}") center/cover`
-    : theme.bgType === 'video' ? '#000'
-    : theme.bgColor
+    : eff.bgType === 'gradient' ? `linear-gradient(135deg, ${eff.bgGradient[0]}, ${eff.bgGradient[1]})`
+    : eff.bgType === 'transparent' ? 'repeating-conic-gradient(#1a1410 0 25%, #2a1f17 0 50%) 50% / 14px 14px'
+    : eff.bgType === 'image' && eff.bgImage ? `url("${eff.bgImage}") center/cover`
+    : eff.bgType === 'video' ? '#000'
+    : eff.bgColor
 
-  const align = theme.textAlign === 'top' ? 'flex-start'
-              : theme.textAlign === 'bottom' ? 'flex-end' : 'center'
+  const align = eff.textAlign === 'top' ? 'flex-start'
+              : eff.textAlign === 'bottom' ? 'flex-end' : 'center'
 
-  // 1920px = ancho de referencia de la proyección.
-  // cqw = % del ancho del contenedor → escala proporcional automática.
-  const fontSize     = `${(theme.fontSize / 1920) * 100}cqw`
-  const refSize      = `${((theme.fontSize / 4) / 1920) * 100}cqw`
-  const paddingPct   = `${(40 / 1920) * 100}cqw`
+  const fontSize   = `${(eff.fontSize / 1920) * 100}cqw`
+  const refSize    = `${((eff.fontSize / 4) / 1920) * 100}cqw`
+  const paddingPct = `${(40 / 1920) * 100}cqw`
 
   const renderContent = (s) => (
     <div style={{
@@ -35,25 +38,25 @@ export default function SlideRenderer({ slide, theme, isBlackout = false }) {
       padding: paddingPct, boxSizing: 'border-box',
     }}>
       <div style={{ textAlign: 'center', maxWidth: '100%' }}>
-        <p style={{
-          color: theme.fontColor,
-          fontSize,
-          fontFamily: theme.fontFamily || 'var(--font-display)',
-          fontWeight: theme.fontWeight ?? 500,
-          textShadow: theme.textShadow ? '0 4px 20px rgba(0,0,0,0.6)' : 'none',
-          lineHeight: 1.25,
-          margin: 0,
-          letterSpacing: '0.005em',
-        }}>{s.text}</p>
-        {s.reference && theme.referenceVisible && (
+        {s.text && (
           <p style={{
-            marginTop: refSize, marginBottom: 0,
+            color: eff.fontColor,
+            fontSize,
+            fontFamily: eff.fontFamily || 'var(--font-display)',
+            fontWeight: eff.fontWeight ?? 500,
+            textShadow: eff.textShadow ? '0 4px 20px rgba(0,0,0,0.6)' : 'none',
+            lineHeight: 1.25, margin: 0, letterSpacing: '0.005em',
+            whiteSpace: 'pre-line',
+          }}>{s.text}</p>
+        )}
+        {s.reference && eff.referenceVisible !== false && (
+          <p style={{
+            marginTop: s.text ? refSize : 0, marginBottom: 0,
             fontFamily: 'var(--font-mono)',
             fontSize: refSize,
-            color: theme.fontColor, opacity: 0.7,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            textShadow: theme.textShadow ? '0 2px 6px rgba(0,0,0,0.6)' : 'none',
+            color: eff.fontColor, opacity: 0.7,
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            textShadow: eff.textShadow ? '0 2px 6px rgba(0,0,0,0.6)' : 'none',
           }}>{s.reference}</p>
         )}
       </div>
@@ -70,10 +73,14 @@ export default function SlideRenderer({ slide, theme, isBlackout = false }) {
       containerType: 'size',
     }}>
       {showVideo && !isBlackout && (
-        <video src={theme.bgVideo} autoPlay loop muted playsInline
+        <video src={eff.bgVideo}
+          autoPlay
+          loop={slide?.videoLoop !== false}
+          muted={slide?.videoMuted !== false}
+          playsInline
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
       )}
-      {!isBlank && <SlideTransition slide={slide} theme={theme} render={renderContent} />}
+      {!isBlank && <SlideTransition slide={slide} theme={eff} render={renderContent} />}
       {isBlackout && (
         <div style={{
           position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
@@ -84,4 +91,20 @@ export default function SlideRenderer({ slide, theme, isBlackout = false }) {
       )}
     </div>
   )
+}
+
+/**
+ * Combina el tema global con los overrides que pueda traer el slide.
+ * Solo las propiedades visuales presentes en el slide reemplazan al tema.
+ */
+function mergeThemeWithSlide(theme, slide) {
+  if (!slide) return theme
+  const out = { ...theme }
+  const keys = ['bgType', 'bgColor', 'bgGradient', 'bgImage', 'bgVideo',
+                'fontColor', 'fontFamily', 'fontSize', 'fontWeight',
+                'textAlign', 'textShadow', 'referenceVisible']
+  for (const k of keys) {
+    if (slide[k] !== undefined) out[k] = slide[k]
+  }
+  return out
 }

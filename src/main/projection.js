@@ -2,10 +2,10 @@
 // Crea BrowserWindows nativas que OBS puede capturar directamente
 // (sin servidor HTTP, sin red, latencia cero vía IPC del SO).
 
-const { BrowserWindow, screen } = require('electron')
+const { app, BrowserWindow, screen } = require('electron')
 const path = require('path')
 
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = !app.isPackaged
 const projections = new Map()  // mode → { window, options }
 let currentSlide = null
 let currentTheme = defaultTheme()
