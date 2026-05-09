@@ -3,6 +3,7 @@
 // Remoto (api.bible): carga perezosa por capítulo, requiere API key del usuario.
 
 import * as apiBible from './apiBible.js'
+import { normalizeText } from './textUtils.js'
 
 const BOOK_NAMES_ES = {
   'Genesis': 'Génesis', 'Exodus': 'Éxodo', 'Leviticus': 'Levítico',
@@ -43,6 +44,11 @@ const BASE = import.meta.env.BASE_URL || '/'
 const LOCAL_VERSIONS = [
   { id: 'rvr1909', short: 'RVR 1909', name: 'Reina-Valera 1909',
     license: 'Dominio público', type: 'local', file: BASE + 'rvr60.json' },
+  // RVR 1960 está bajo copyright de Sociedades Bíblicas Unidas y no se puede empaquetar.
+  // Placeholder informativo: el usuario puede importar el .xmm desde Ajustes → Biblias.
+  { id: 'rvr1960', short: 'RVR 1960', name: 'Reina-Valera 1960',
+    license: 'Sociedades Bíblicas Unidas · importar archivo o usar API.bible',
+    type: 'placeholder', file: null },
   { id: 'nvi', short: 'NVI', name: 'Nueva Versión Internacional',
     license: 'Bíblica, Inc. · uso devocional', type: 'local', file: BASE + 'nvi.json' },
   { id: 'dhh', short: 'DHH', name: 'Dios Habla Hoy',
@@ -123,6 +129,13 @@ export async function getBooks(versionId = activeVersionId) {
   const v = getAllVersions().find(x => x.id === versionId) || LOCAL_VERSIONS[0]
   if (v.type === 'local')    return loadLocalVersion(v)
   if (v.type === 'apibible') return loadRemoteSkeleton(v)
+  if (v.type === 'placeholder') {
+    throw new Error(
+      `${v.name} está bajo copyright (${v.license}). Para usarla:\n` +
+      `1. Configura tu API key en Ajustes → API.Bible y selecciona esta versión, o\n` +
+      `2. Importa un archivo .xmm/.xml desde Ajustes → Biblias.`
+    )
+  }
 }
 
 export async function getChapter(bookIndex, chapterNum, versionId = activeVersionId) {
@@ -168,7 +181,8 @@ export async function searchText(query, limit = 50, versionId = activeVersionId)
   if (v.type !== 'local') return []  // solo búsqueda local por ahora
 
   const books = await loadLocalVersion(v)
-  const q = query.trim().toLowerCase()
+  // Normaliza la query: tolerante a tildes, mayúsculas y puntuación.
+  const q = normalizeText(query)
   if (q.length < 3) return []
   const results = []
   for (let b = 0; b < books.length; b++) {
@@ -176,7 +190,7 @@ export async function searchText(query, limit = 50, versionId = activeVersionId)
     for (let c = 0; c < book.chapters.length; c++) {
       const chapter = book.chapters[c]
       for (let vIdx = 0; vIdx < chapter.length; vIdx++) {
-        if (chapter[vIdx].toLowerCase().includes(q)) {
+        if (normalizeText(chapter[vIdx]).includes(q)) {
           results.push({
             text: chapter[vIdx],
             reference: `${book.name} ${c + 1}:${vIdx + 1}`,

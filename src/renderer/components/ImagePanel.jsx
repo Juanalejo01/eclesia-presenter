@@ -17,6 +17,8 @@ export default function ImagePanel({ onSendSlide }) {
   const [selected, setSelected] = useState(null)   // item de la biblioteca
   const [caption, setCaption] = useState('')        // texto opcional encima
   const [reference, setReference] = useState('')
+  const [imageFit, setImageFit] = useState('cover')   // 'cover' | 'contain' | 'fill'
+  const [bgImageBlur, setBgImageBlur] = useState(0)
 
   const refresh = async () => {
     setLoading(true)
@@ -41,6 +43,8 @@ export default function ImagePanel({ onSendSlide }) {
       reference: withCaption ? reference : '',
       bgType: 'image',
       bgImage: getMediaURL(item),
+      imageFit,
+      bgImageBlur,
     })
   }
 
@@ -52,7 +56,7 @@ export default function ImagePanel({ onSendSlide }) {
       title: caption || item.name || 'Imagen',
       text: caption || '',
       reference: reference || '',
-      meta: { bgType: 'image', bgImage: getMediaURL(item) },
+      meta: { bgType: 'image', bgImage: getMediaURL(item), imageFit, bgImageBlur },
     })
   }
 
@@ -72,6 +76,43 @@ export default function ImagePanel({ onSendSlide }) {
 
       <div className="ws-body">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Ajuste de imagen */}
+          <div className="card" style={{ padding: 16 }}>
+            <div className="section-h" style={{ marginBottom: 10 }}>
+              <h3>Ajuste de la imagen</h3>
+              <span className="sub">cómo encaja en pantalla 16:9</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div className="field">
+                <span className="label">Modo</span>
+                <div style={{ display: 'flex', gap: 4, padding: 3, background: 'var(--bg-1)', border: '1px solid var(--line-1)', borderRadius: 'var(--r-md)' }}>
+                  {[
+                    { v: 'cover',   l: 'Cubrir' },
+                    { v: 'contain', l: 'Contener' },
+                    { v: 'fill',    l: 'Estirar' },
+                  ].map(o => (
+                    <button key={o.v}
+                      className={'modal-tab ' + (imageFit === o.v ? 'active' : '')}
+                      style={{ flex: 1 }}
+                      onClick={() => setImageFit(o.v)}>{o.l}</button>
+                  ))}
+                </div>
+              </div>
+              {imageFit === 'contain' && (
+                <div className="field">
+                  <span className="label">Blur de relleno · {bgImageBlur}px</span>
+                  <input type="range" min="0" max="50" value={bgImageBlur}
+                    onChange={e => setBgImageBlur(+e.target.value)}
+                    className="slider"
+                    style={{ '--val': (bgImageBlur / 50 * 100) + '%' }} />
+                </div>
+              )}
+            </div>
+            <p style={{ margin: '8px 0 0', fontSize: 11, color: 'var(--text-3)' }}>
+              <b style={{ color: 'var(--text-2)' }}>Cubrir</b> recorta · <b style={{ color: 'var(--text-2)' }}>Contener</b> muestra entera con barras (ideal para verticales) · <b style={{ color: 'var(--text-2)' }}>Estirar</b> deforma.
+            </p>
+          </div>
 
           {/* Caption opcional */}
           <div className="card" style={{ padding: 16 }}>

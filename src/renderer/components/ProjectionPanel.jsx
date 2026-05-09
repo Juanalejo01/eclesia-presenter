@@ -130,27 +130,12 @@ export default function ProjectionPanel({ slide }) {
 
       <div className="ws-body">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
-          {/* Output cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <OutputCard
-              title="Pantalla completa"
-              subtitle="Proyector físico · fondo del tema"
-              Icon={IconMonitor} accent="copper"
-              isOpen={isOpen('background')}
-              displays={displays}
-              onOpen={(displayId) => open('background', displayId)}
-              onClose={() => close('background')}
-            />
-            <OutputCard
-              title="Overlay (Lower-Third)"
-              subtitle="Banda inferior transparente para OBS"
-              Icon={IconLayers} accent="bible"
-              isOpen={isOpen('overlay')}
-              displays={displays}
-              onOpen={(displayId) => open('overlay', displayId)}
-              onClose={() => close('overlay')}
-            />
-          </div>
+          {/* Aviso suave: el control de ventanas se gestiona en Transmisión */}
+          {!hasElectron && (
+            <div className="card" style={{ padding: 12, fontSize: 12, color: 'var(--preview)' }}>
+              ⚠ Solo previsualización en navegador. Las ventanas reales requieren la app instalada.
+            </div>
+          )}
 
           {/* Tabs editor */}
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -384,6 +369,8 @@ function CustomizationGrid({ theme, updateTheme }) {
 // ---------- Editor: Overlay (Lower-Third) ----------
 function OverlayEditor({ theme, preview, activePreset, setActivePreset, updateOverlay }) {
   const o = theme.overlay || {}
+  const [fonts, setFonts] = useState([])
+  useEffect(() => { listSystemFonts().then(setFonts) }, [])
 
   // Aplica un preset reemplazando TODO el overlay (no merge parcial),
   // así no quedan valores residuales del estado anterior.
@@ -575,6 +562,29 @@ function OverlayEditor({ theme, preview, activePreset, setActivePreset, updateOv
 
           <ColorRow label="Color del texto" value={o.fontColor}
             onChange={v => updateOverlay({ fontColor: v })} />
+
+          <div className="field" style={{ gridColumn: 'span 2' }}>
+            <span className="label">
+              Fuente del lower-third · {fonts.length > 0 ? `${fonts.length} fuentes` : 'cargando…'}
+            </span>
+            <select className="select" style={{ width: '100%', height: 40, fontFamily: o.fontFamily }}
+              value={o.fontFamily || ''}
+              onChange={e => updateOverlay({ fontFamily: e.target.value })}>
+              <option value='"Cormorant Garamond", serif'>Cormorant Garamond (default)</option>
+              {fonts.length > 0 && <optgroup label="── Sistema ──">
+                {fonts.filter(f => !f.generic).map(f => (
+                  <option key={f.family} value={f.family} style={{ fontFamily: f.family }}>
+                    {f.family}
+                  </option>
+                ))}
+              </optgroup>}
+              {fonts.length > 0 && <optgroup label="── Genéricas ──">
+                {fonts.filter(f => f.generic).map(f => (
+                  <option key={f.family} value={f.family}>{f.family}</option>
+                ))}
+              </optgroup>}
+            </select>
+          </div>
 
           {o.refEnabled && (
             <>

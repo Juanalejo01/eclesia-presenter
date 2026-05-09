@@ -1,11 +1,12 @@
 import { useTheme } from '../services/themeStore.js'
-import { useSlideStore, setPreviewMode, commitPreview } from '../services/slideStore.js'
+import { useSlideStore, setPreviewMode, commitPreview, setLive } from '../services/slideStore.js'
 import SlideRenderer from './SlideRenderer.jsx'
-import { IconArrowRight } from './Icons.jsx'
+import { IconArrowRight, IconX } from './Icons.jsx'
 
 export default function SlidePreview() {
   const theme = useTheme()
   const { live, preview, previewMode } = useSlideStore()
+  const clearLive = () => setLive(null)
 
   return (
     <aside className="monitor">
@@ -24,6 +25,23 @@ export default function SlidePreview() {
             <span className="mon-label-text">1920 × 1080</span>
           </div>
           <MonScreen slide={live} theme={theme} isLive label="PGM" />
+
+          {/* Botón limpiar pantalla — atajo F9 */}
+          <button
+            onClick={clearLive}
+            disabled={!live}
+            className="btn"
+            style={{
+              width: '100%', justifyContent: 'space-between',
+              marginTop: 8, height: 36,
+              opacity: live ? 1 : 0.5,
+            }}
+            title="Quita el contenido del proyector (queda solo el fondo del tema). Atajo: F9">
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <IconX size={13} /> Limpiar pantalla
+            </span>
+            <span className="kbd">F9</span>
+          </button>
         </div>
 
         {previewMode && (

@@ -66,6 +66,16 @@ export default function SongEditor({ song, onSave, onCancel }) {
   }
   const updateSection = (i, patch) => setSections(sections.map((s, idx) => idx === i ? { ...s, ...patch } : s))
   const removeSection = (i) => setSections(sections.filter((_, idx) => idx !== i))
+
+  // Convierte la letra de TODAS las secciones a mayúsculas (operación bulk).
+  // Útil para canciones que se proyectan estilo broadcast/clásico.
+  const upperAll = () => {
+    setSections(sections.map(s => ({ ...s, text: (s.text || '').toUpperCase() })))
+  }
+  // Inverso: deja todo en formato normal (capitalización natural según primera letra).
+  const lowerAll = () => {
+    setSections(sections.map(s => ({ ...s, text: (s.text || '').toLowerCase() })))
+  }
   const moveSection = (i, dir) => {
     const j = i + dir
     if (j < 0 || j >= sections.length) return
@@ -157,7 +167,17 @@ export default function SongEditor({ song, onSave, onCancel }) {
               <div>
                 <div className="section-h" style={{ marginBottom: 10 }}>
                   <h3 style={{ fontSize: 14 }}>Letra por secciones</h3>
-                  <button className="btn btn-ghost" onClick={addSection}><IconPlus size={13} /> Sección</button>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="btn btn-ghost" onClick={upperAll}
+                      title="Convertir toda la letra a mayúsculas">
+                      AA · MAYÚS
+                    </button>
+                    <button className="btn btn-ghost" onClick={lowerAll}
+                      title="Convertir toda la letra a minúsculas">
+                      aa · minús
+                    </button>
+                    <button className="btn btn-ghost" onClick={addSection}><IconPlus size={13} /> Sección</button>
+                  </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {sections.map((section, i) => (

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 const KEY = 'eclesia.appSettings'
 
 export const DEFAULT_SETTINGS = {
-  theme: 'native',           // 'native' | 'dark' | 'light' | 'ocean' | 'rose'
+  theme: 'light',            // 'native' | 'dark' | 'light' | 'ocean' | 'rose'  (light = default principal)
   defaultDisplayBackground: null, // displayId
   defaultDisplayOverlay:    null,
   storagePath: null,         // carpeta principal

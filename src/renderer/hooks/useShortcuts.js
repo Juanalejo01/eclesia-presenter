@@ -64,6 +64,9 @@ export function useGlobalShortcuts({ onPanelChange, onBlank, onClearSlide }) {
       if (e.key === ' ') { e.preventDefault(); onBlank?.('blank');    return }
       if (e.key.toLowerCase() === 'b' && !ctrl) { e.preventDefault(); onBlank?.('blackout'); return }
 
+      // F9: limpiar el live (sin slide proyectado, ventana queda con fondo del tema sin texto)
+      if (e.key === 'F9') { e.preventDefault(); onClearSlide?.(); return }
+
       // Limpiar
       if (e.key === 'Escape') {
         if (isTyping(e.target)) { e.target.blur(); return }

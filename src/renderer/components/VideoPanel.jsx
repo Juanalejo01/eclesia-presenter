@@ -19,6 +19,7 @@ export default function VideoPanel({ onSendSlide }) {
   const [reference, setReference] = useState('')
   const [loop, setLoop] = useState(true)
   const [muted, setMuted] = useState(true)
+  const [videoFit, setVideoFit] = useState('cover')
 
   const refresh = async () => {
     setLoading(true)
@@ -44,6 +45,7 @@ export default function VideoPanel({ onSendSlide }) {
       bgVideo: getMediaURL(item),
       videoLoop: loop,
       videoMuted: muted,
+      videoFit,
     })
   }
 
@@ -53,7 +55,7 @@ export default function VideoPanel({ onSendSlide }) {
       title: caption || item.name || 'Video',
       text: caption || '',
       reference: reference || '',
-      meta: { bgType: 'video', bgVideo: getMediaURL(item), loop, muted },
+      meta: { bgType: 'video', bgVideo: getMediaURL(item), loop, muted, videoFit },
     })
   }
 
@@ -73,6 +75,29 @@ export default function VideoPanel({ onSendSlide }) {
 
       <div className="ws-body">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Ajuste de video */}
+          <div className="card" style={{ padding: 16 }}>
+            <div className="section-h" style={{ marginBottom: 10 }}>
+              <h3>Ajuste del video</h3>
+              <span className="sub">cómo encaja en pantalla 16:9</span>
+            </div>
+            <div className="field">
+              <span className="label">Modo</span>
+              <div style={{ display: 'flex', gap: 4, padding: 3, background: 'var(--bg-1)', border: '1px solid var(--line-1)', borderRadius: 'var(--r-md)' }}>
+                {[
+                  { v: 'cover',   l: 'Cubrir (recorta)' },
+                  { v: 'contain', l: 'Contener (con barras)' },
+                  { v: 'fill',    l: 'Estirar (deforma)' },
+                ].map(o => (
+                  <button key={o.v}
+                    className={'modal-tab ' + (videoFit === o.v ? 'active' : '')}
+                    style={{ flex: 1 }}
+                    onClick={() => setVideoFit(o.v)}>{o.l}</button>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Reproducción + caption */}
           <div className="card" style={{ padding: 16 }}>

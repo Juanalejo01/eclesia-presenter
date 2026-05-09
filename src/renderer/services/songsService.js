@@ -1,6 +1,8 @@
 // Servicio dual: usa IPC de Electron (SQLite real) si está disponible,
 // sino cae a localStorage para poder previsualizar en navegador.
 
+import { normalizeText } from './textUtils.js'
+
 const hasElectron = typeof window !== 'undefined' && !!window.electron?.songs
 const LS_KEY = 'eclesia.songs'
 let nextId = 1
@@ -44,15 +46,28 @@ function seedLSIfEmpty() {
 // --------- API pública ---------
 
 export async function listSongs({ search = '', onlyFavorites = false } = {}) {
-  if (hasElectron) return window.electron.songs.list({ search, onlyFavorites })
+  if (hasElectron) {
+    // Pide TODAS al main (sin filter SQL) y filtra en cliente con normalizeText.
+    // Así la búsqueda funciona aunque el usuario omita tildes/comas.
+    let songs = await window.electron.songs.list({ search: '', onlyFavorites })
+    if (search) {
+      const q = normalizeText(search)
+      songs = songs.filter(s =>
+        normalizeText(s.title).includes(q) ||
+        normalizeText(s.author || '').includes(q) ||
+        normalizeText(s.tags || '').includes(q)
+      )
+    }
+    return songs
+  }
 
   let songs = seedLSIfEmpty()
   if (search) {
-    const q = search.toLowerCase()
+    const q = normalizeText(search)
     songs = songs.filter(s =>
-      s.title.toLowerCase().includes(q) ||
-      (s.author || '').toLowerCase().includes(q) ||
-      (s.tags || '').toLowerCase().includes(q)
+      normalizeText(s.title).includes(q) ||
+      normalizeText(s.author || '').includes(q) ||
+      normalizeText(s.tags || '').includes(q)
     )
   }
   if (onlyFavorites) songs = songs.filter(s => s.is_favorite)

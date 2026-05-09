@@ -14,7 +14,7 @@ import {
 export default function SongsPanel({ onSendSlide }) {
   const [songs, setSongs]           = useState([])
   const [search, setSearch]         = useState('')
-  const [onlyFavorites, setFavOnly] = useState(false)
+  const [onlyFavorites, setFavOnly] = useState(false)  // 'Servicio del día' = canciones marcadas para hoy
   const [selected, setSelected]     = useState(null)
   const [sectionIndex, setSectionIndex] = useState(0)
   const [editing, setEditing]       = useState(null)
@@ -113,14 +113,28 @@ export default function SongsPanel({ onSendSlide }) {
             <div className="input-wrap" style={{ flex: 1 }}>
               <IconSearch size={15} className="input-icon" />
               <input value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Buscar por título, autor o etiqueta…" />
+                placeholder="Buscar por título, autor o etiqueta (sin tildes ok)…" />
               <span className="input-kbd"><span className="kbd">/</span></span>
             </div>
             <button
               className={'btn' + (onlyFavorites ? ' btn-primary' : '')}
-              onClick={() => setFavOnly(v => !v)}>
-              {onlyFavorites ? <IconStarFill size={14} /> : <IconStar size={14} />} Favoritos
+              onClick={() => setFavOnly(v => !v)}
+              title="Filtra solo las canciones marcadas para el servicio del día">
+              {onlyFavorites ? <IconStarFill size={14} /> : <IconStar size={14} />} Servicio del día
             </button>
+            {onlyFavorites && songs.some(s => s.is_favorite) && (
+              <button className="btn btn-ghost btn-danger"
+                onClick={async () => {
+                  if (!confirm('¿Quitar todas las canciones de la selección del día?')) return
+                  for (const s of songs.filter(x => x.is_favorite)) {
+                    await toggleFavorite(s.id)
+                  }
+                  refresh()
+                }}
+                title="Quita la marca de servicio del día a TODAS las canciones marcadas">
+                Limpiar lista
+              </button>
+            )}
           </div>
 
           {songs.length === 0 && (
