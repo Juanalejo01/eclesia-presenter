@@ -44,11 +44,12 @@ const BASE = import.meta.env.BASE_URL || '/'
 const LOCAL_VERSIONS = [
   { id: 'rvr1909', short: 'RVR 1909', name: 'Reina-Valera 1909',
     license: 'Dominio público', type: 'local', file: BASE + 'rvr60.json' },
-  // RVR 1960 está bajo copyright de Sociedades Bíblicas Unidas y no se puede empaquetar.
-  // Placeholder informativo: el usuario puede importar el .xmm desde Ajustes → Biblias.
   { id: 'rvr1960', short: 'RVR 1960', name: 'Reina-Valera 1960',
-    license: 'Sociedades Bíblicas Unidas · importar archivo o usar API.bible',
-    type: 'placeholder', file: null },
+    license: 'Sociedades Bíblicas Unidas · uso devocional', type: 'local', file: BASE + 'rvr1960.json' },
+  { id: 'rv2020', short: 'RV 2020', name: 'Reina-Valera 2020',
+    license: 'Sociedades Bíblicas Unidas · uso devocional', type: 'local', file: BASE + 'rv2020.json' },
+  { id: 'nbv', short: 'NBV', name: 'Nueva Biblia Viva',
+    license: 'Editorial Vida · uso devocional', type: 'local', file: BASE + 'nbv.json' },
   { id: 'nvi', short: 'NVI', name: 'Nueva Versión Internacional',
     license: 'Bíblica, Inc. · uso devocional', type: 'local', file: BASE + 'nvi.json' },
   { id: 'dhh', short: 'DHH', name: 'Dios Habla Hoy',
