@@ -93,6 +93,15 @@ body {
   overflow: hidden;
 }
 
+/* Modo overlay: la ventana es transparente para OBS.
+   Aplicada por main.jsx ANTES del primer paint para evitar que el body opaco
+   sea capturado por OBS antes de que useEffect lo cambie. */
+html.eclesia-overlay-mode,
+html.eclesia-overlay-mode body,
+html.eclesia-overlay-mode #root {
+  background: transparent !important;
+}
+
 button { font-family: inherit; color: inherit; }
 input, textarea, select { font-family: inherit; color: inherit; }
 ::selection { background: rgba(200, 121, 74, 0.4); color: var(--text-1); }

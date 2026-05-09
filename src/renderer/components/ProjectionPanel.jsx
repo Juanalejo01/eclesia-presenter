@@ -324,54 +324,56 @@ function OverlayEditor({ theme, preview, activePreset, setActivePreset, updateOv
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
-      {/* Preview del lower-third sobre fondo neutro de cámara */}
-      <div>
-        <div className="section-h">
-          <h3>Vista previa del lower-third</h3>
-          <span className="sub">simula captura OBS · sobre cámara</span>
-        </div>
-        <div style={{
-          aspectRatio: '16 / 9',
-          borderRadius: 'var(--r-lg)',
-          overflow: 'hidden', position: 'relative',
-          // Simulación de fondo "cámara" — degradado oscuro genérico
-          background: 'linear-gradient(135deg, #2a3440 0%, #4a5260 50%, #2a3440 100%)',
-          border: '1px solid var(--line-1)',
-          boxShadow: 'var(--shadow-1)',
-        }}>
-          {/* Patrón de "ruido" para que se note la transparencia */}
+      {/* Preview compacto + presets en columnas (preview no domina la pantalla) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, alignItems: 'start' }}>
+        {/* Mini preview izquierda */}
+        <div>
+          <div className="section-h" style={{ marginBottom: 8 }}>
+            <h3 style={{ fontSize: 12 }}>Vista previa</h3>
+            <span className="sub" style={{ fontSize: 9 }}>captura OBS</span>
+          </div>
           <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.08), transparent 70%)',
-            mixBlendMode: 'overlay',
-          }} />
-          <div style={{ position: 'absolute', inset: 0 }}>
-            <LowerThirdRenderer slide={preview} theme={theme} />
+            aspectRatio: '16 / 9',
+            borderRadius: 'var(--r-md)',
+            overflow: 'hidden', position: 'relative',
+            background: 'linear-gradient(135deg, #2a3440 0%, #4a5260 50%, #2a3440 100%)',
+            border: '1px solid var(--line-1)',
+            boxShadow: 'var(--shadow-1)',
+          }}>
+            {/* Simula textura de cámara para que se note la transparencia */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.08), transparent 70%)',
+              mixBlendMode: 'overlay',
+            }} />
+            <div style={{ position: 'absolute', inset: 0, transform: 'scale(0.6)', transformOrigin: 'center center' }}>
+              <LowerThirdRenderer slide={preview} theme={theme} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Presets — la "baraja" */}
-      <div>
-        <div className="section-h">
-          <h3>Estilos predefinidos</h3>
-          <span className="sub">{OVERLAY_PRESETS.length} plantillas · click para aplicar</span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-          {OVERLAY_PRESETS.map(p => (
-            <button key={p.id}
-              className={'template-card' + (activePreset === p.id ? ' active' : '')}
-              onClick={() => { updateOverlay(p.overlay); setActivePreset(p.id) }}
-              style={{ position: 'relative', overflow: 'hidden', minHeight: 78 }}>
-              <span style={{
-                position: 'absolute', top: 0, right: 0, bottom: 0, width: 60,
-                background: p.preview.bg,
-                borderLeft: p.preview.border !== 'transparent' ? `3px solid ${p.preview.border}` : 'none',
-              }} />
-              <span className="template-card-title" style={{ position: 'relative', zIndex: 1 }}>{p.label}</span>
-              <span className="template-card-meta" style={{ position: 'relative', zIndex: 1 }}>{p.description}</span>
-            </button>
-          ))}
+        {/* Presets ("baraja") a la derecha */}
+        <div>
+          <div className="section-h" style={{ marginBottom: 8 }}>
+            <h3 style={{ fontSize: 12 }}>Estilos predefinidos</h3>
+            <span className="sub" style={{ fontSize: 9 }}>{OVERLAY_PRESETS.length} plantillas</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            {OVERLAY_PRESETS.map(p => (
+              <button key={p.id}
+                className={'template-card' + (activePreset === p.id ? ' active' : '')}
+                onClick={() => { updateOverlay(p.overlay); setActivePreset(p.id) }}
+                style={{ position: 'relative', overflow: 'hidden', minHeight: 70, padding: '10px 12px' }}>
+                <span style={{
+                  position: 'absolute', top: 0, right: 0, bottom: 0, width: 50,
+                  background: p.preview.bg,
+                  borderLeft: p.preview.border !== 'transparent' ? `3px solid ${p.preview.border}` : 'none',
+                }} />
+                <span className="template-card-title" style={{ position: 'relative', zIndex: 1, fontSize: 12 }}>{p.label}</span>
+                <span className="template-card-meta" style={{ position: 'relative', zIndex: 1, fontSize: 9 }}>{p.description}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

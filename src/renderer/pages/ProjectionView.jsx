@@ -18,29 +18,22 @@ export default function ProjectionView() {
   const [slide, setSlide] = useState(window.__demoSlide || null)
   const [theme, setTheme] = useState(window.__demoTheme || DEFAULT_THEME)
 
-  // CRÍTICO para overlay: el body de eclesia-design.css tiene `background: var(--bg-0)`
-  // que es opaco. Lo forzamos a transparent SOLO en modo overlay para que la captura
-  // de OBS muestre realmente solo el lower-third con el resto transparente.
+  // Setea el título de la ventana para que OBS pueda distinguirlas en su lista
+  // de Window Capture. Por defecto Vite/React usa el <title> del index.html
+  // (mismo para ambas ventanas), por eso hay que forzarlo aquí.
   useEffect(() => {
-    if (!isOverlay) return
-    const html = document.documentElement
-    const body = document.body
-    const root = document.getElementById('root')
+    document.title = isOverlay
+      ? 'EclesiaPresenter — Lower-Third (OBS)'
+      : 'EclesiaPresenter — Pantalla completa'
+  }, [isOverlay])
 
-    const prev = {
-      htmlBg: html.style.background,
-      bodyBg: body.style.background,
-      rootBg: root?.style.background,
-    }
-
-    html.style.background = 'transparent'
-    body.style.background = 'transparent'
-    if (root) root.style.background = 'transparent'
-
+  // La transparencia del overlay ya se aplica vía clase CSS desde main.jsx
+  // (eclesia-overlay-mode) ANTES del primer paint. Aquí solo nos aseguramos
+  // de que la clase esté en su sitio por si llegamos por hot-reload.
+  useEffect(() => {
+    if (isOverlay) document.documentElement.classList.add('eclesia-overlay-mode')
     return () => {
-      html.style.background = prev.htmlBg
-      body.style.background = prev.bodyBg
-      if (root) root.style.background = prev.rootBg
+      if (isOverlay) document.documentElement.classList.remove('eclesia-overlay-mode')
     }
   }, [isOverlay])
 
