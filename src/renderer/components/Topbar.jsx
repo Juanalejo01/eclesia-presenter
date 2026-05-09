@@ -12,7 +12,22 @@ export default function Topbar({ onSettingsChange }) {
     return () => clearInterval(id)
   }, [])
 
-  const openPresenter = () => window.electron?.openPresenter()
+  // Abrir la ventana de proyección moderna (background = pantalla completa para el proyector físico).
+  // Antes esto llamaba a window.electron.openPresenter() que cargaba la app entera de nuevo.
+  const openPresenter = async () => {
+    const proj = window.electron?.projection
+    if (!proj) {
+      alert('La proyección requiere la app nativa (npm run dev). En navegador no funciona.')
+      return
+    }
+    try {
+      const state = await proj.state()
+      if (state.open.includes('background')) await proj.close('background')
+      await proj.open({ mode: 'background' })
+    } catch (e) {
+      console.error('openPresenter failed:', e)
+    }
+  }
 
   return (
     <>

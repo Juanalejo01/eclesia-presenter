@@ -10,7 +10,6 @@ const projection = require('./projection')
 const isDev = !app.isPackaged
 
 let mainWindow = null
-let presenterWindow = null
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -36,54 +35,11 @@ function createMainWindow() {
   mainWindow.on('closed', () => { mainWindow = null })
 }
 
-function createPresenterWindow() {
-  presenterWindow = new BrowserWindow({
-    width: 1280,
-    height: 720,
-    title: 'EclesiaPresenter — Proyector',
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-    },
-  })
-
-  if (isDev) {
-    presenterWindow.loadURL('http://localhost:5173/#/presenter')
-  } else {
-    presenterWindow.loadFile(
-      path.join(__dirname, '../../dist/renderer/index.html'),
-      { hash: '/presenter' }
-    )
-  }
-
-  // CRÍTICO: limpiar la referencia cuando la ventana se cierra,
-  // si no, los IPC handlers intentan usar un objeto destruido y crashean.
-  presenterWindow.on('closed', () => { presenterWindow = null })
-}
-
-// Helper para chequear si una ventana es usable (existe + no destruida).
-function isAlive(win) {
-  return win && !win.isDestroyed()
-}
-
-// IPC: abrir/cerrar ventana proyector
-ipcMain.handle('presenter:open', () => {
-  if (!isAlive(presenterWindow)) createPresenterWindow()
-  else presenterWindow.focus()
-})
-
-ipcMain.handle('presenter:close', () => {
-  if (isAlive(presenterWindow)) presenterWindow.close()
-  presenterWindow = null
-})
-
-// IPC: enviar slide al proyector (legacy + proyección nueva)
+// IPC: enviar slide al proyector. Antes había un sistema legacy con
+// `presenterWindow` (otra BrowserWindow) que se cargó toda la app de nuevo.
+// Eliminado: ahora todo va al sistema moderno `projection` que abre
+// ventanas dedicadas (background fullscreen + overlay transparente para OBS).
 ipcMain.on('slide:send', (_event, slideData) => {
-  if (isAlive(presenterWindow)) {
-    try { presenterWindow.webContents.send('slide:receive', slideData) }
-    catch (e) { console.warn('slide:send failed:', e.message) }
-  }
   try { projection.setSlide(slideData) }
   catch (e) { console.warn('projection.setSlide failed:', e.message) }
 })

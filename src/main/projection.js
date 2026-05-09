@@ -71,20 +71,33 @@ function openProjection(opts = {}) {
 
   const isOverlay = mode === 'overlay'
 
+  // OVERLAY: ventana invisible para el usuario pero capturable por OBS.
+  //   - Tamaño full HD 1920x1080 (resolución nativa de captura)
+  //   - Posicionada off-screen (x: -3000) para no estorbar al usuario
+  //   - SIN alwaysOnTop (antes ponía la ventana sobre todo el escritorio)
+  //   - Taskbar visible para que el usuario pueda inspeccionarla si quiere
+  // OBS la captura igual con Window Capture aunque esté fuera de pantalla.
+  const overlayBounds = {
+    x: -3000, y: 0,
+    width: 1920, height: 1080,
+  }
+
   const win = new BrowserWindow({
-    x: target.bounds.x,
-    y: target.bounds.y,
-    width: target.bounds.width,
-    height: isOverlay ? Math.round(target.bounds.height / 3) : target.bounds.height,
+    x: isOverlay ? overlayBounds.x      : target.bounds.x,
+    y: isOverlay ? overlayBounds.y      : target.bounds.y,
+    width:  isOverlay ? overlayBounds.width  : target.bounds.width,
+    height: isOverlay ? overlayBounds.height : target.bounds.height,
     fullscreen: !isOverlay && (opts.fullscreen ?? true),
     frame: false,
     transparent: isOverlay,
     backgroundColor: isOverlay ? '#00000000' : '#000000',
     hasShadow: false,
-    skipTaskbar: isOverlay,
-    alwaysOnTop: isOverlay,
+    skipTaskbar: false,                  // visible en taskbar para inspeccionar
+    alwaysOnTop: false,                  // NUNCA encima del escritorio
     resizable: !isOverlay,
-    focusable: !isOverlay,           // overlay no roba focus al recibir slides
+    focusable: !isOverlay,
+    show: !isOverlay,                    // overlay arranca oculto, se muestra off-screen
+    title: isOverlay ? 'EclesiaPresenter — Overlay (OBS)' : 'EclesiaPresenter — Proyección',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -94,10 +107,12 @@ function openProjection(opts = {}) {
   })
 
   if (isOverlay) {
-    win.setIgnoreMouseEvents(true, { forward: true })  // click pasa a través
-    if (process.platform === 'win32') {
-      win.setAlwaysOnTop(true, 'screen-saver')
-    }
+    win.setIgnoreMouseEvents(true, { forward: true })
+    // Al cargar, mostrarla off-screen para que OBS pueda capturarla
+    win.once('ready-to-show', () => {
+      win.showInactive()              // muestra sin robar foco
+      win.setBounds(overlayBounds)    // re-asegura posición off-screen
+    })
   }
 
   win.loadURL(buildWindowURL(mode))

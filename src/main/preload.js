@@ -1,16 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electron', {
-  // Proyector
-  openPresenter: () => ipcRenderer.invoke('presenter:open'),
-  closePresenter: () => ipcRenderer.invoke('presenter:close'),
-
-  // Enviar slide al proyector
+  // Enviar slide al sistema de proyección
+  // (alias conservado para slideStore.syncToMain)
   sendSlide: (slideData) => ipcRenderer.send('slide:send', slideData),
-  onSlideReceive: (callback) => {
-    ipcRenderer.on('slide:receive', (_event, data) => callback(data))
-    return () => ipcRenderer.removeAllListeners('slide:receive')
-  },
 
   // Biblioteca de medios (imágenes/videos)
   media: {
@@ -19,7 +12,7 @@ contextBridge.exposeInMainWorld('electron', {
     delete: (id)   => ipcRenderer.invoke('media:delete', id),
   },
 
-  // Proyección externa (overlay / background)
+  // Proyección externa (overlay / background — capturable por OBS, sin red)
   projection: {
     open:  (opts)  => ipcRenderer.invoke('projection:open', opts),
     close: (mode)  => ipcRenderer.invoke('projection:close', mode),
@@ -30,7 +23,7 @@ contextBridge.exposeInMainWorld('electron', {
     onTheme: (cb)  => { ipcRenderer.on('projection:theme', (_e, d) => cb(d));  return () => ipcRenderer.removeAllListeners('projection:theme') },
   },
 
-  // Songs CRUD
+  // Songs CRUD (SQLite vía main process)
   songs: {
     list:     (opts)       => ipcRenderer.invoke('songs:list', opts),
     get:      (id)         => ipcRenderer.invoke('songs:get', id),
