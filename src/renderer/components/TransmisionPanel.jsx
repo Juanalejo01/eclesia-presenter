@@ -93,14 +93,14 @@ export default function TransmisionPanel() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <OutputCard
                 title="Pantalla completa"
-                subtitle="Proyector físico · 1920×1080"
+                subtitle="Proyector físico · 1920×1080 con fondo del tema"
                 Icon={IconMonitor} accent="copper"
                 isOpen={isOpen('background')}
                 onOpen={() => open('background')}
                 onClose={() => close('background')} />
               <OutputCard
-                title="Overlay transparente"
-                subtitle="Captura OBS · sin red"
+                title="Overlay (Lower-Third)"
+                subtitle="Banda inferior transparente · capturable por OBS"
                 Icon={IconLayers} accent="bible"
                 isOpen={isOpen('overlay')}
                 onOpen={() => open('overlay')}
@@ -245,24 +245,29 @@ function ObsGuide() {
       margin: 0, paddingLeft: 22, color: 'var(--text-2)', fontSize: 13, lineHeight: 1.7,
     }}>
       <li>
-        Abre la ventana <b>Overlay transparente</b> con el botón de arriba.
-        Aparecerá una ventana sin marco que sigue al ratón.
+        Abre la ventana <b>Overlay (Lower-Third)</b> con el botón de arriba.
+        Vive en una posición fuera de pantalla — no estorba a tu vista normal.
       </li>
       <li>
         En OBS Studio: <b>Sources</b> → <b>+ Add</b> → <b>Window Capture</b>.
       </li>
       <li>
-        Selecciona la ventana <code style={{ background: 'var(--bg-3)', padding: '2px 6px', borderRadius: 3, fontFamily: 'var(--font-mono)', fontSize: 11 }}>EclesiaPresenter — Overlay</code>.
+        Selecciona la ventana <code style={{ background: 'var(--bg-3)', padding: '2px 6px', borderRadius: 3, fontFamily: 'var(--font-mono)', fontSize: 11 }}>EclesiaPresenter — Overlay (OBS)</code>.
       </li>
       <li>
-        Marca <b>Capture Method: Windows 10 (1903 and up)</b> y la opción <b>Allow Transparency</b>.
+        Capture Method: <b>Windows 10 (1903 and up)</b>. Marca <b>Allow Transparency</b>.
       </li>
       <li>
-        Posiciona el overlay sobre tu escena principal. El fondo será transparente — solo se verá el texto del slide.
+        El resultado será una banda inferior con el texto del slide, sobre fondo transparente.
+        Posicionala en tu escena principal sobre la cámara o el contenido.
       </li>
       <li>
-        Para fondos completos (gradiente, video, imagen) usa la ventana <b>Pantalla completa</b> en cambio,
-        y captúrala con <b>Display Capture</b> apuntando al monitor secundario.
+        El resto de la ventana (1920×1080) es transparente, así que <b>solo se verá la banda inferior</b>.
+        Si tu escena es 1080p, encajará exacto sin ajustes.
+      </li>
+      <li>
+        Para usar el proyector físico de la iglesia abre la ventana <b>Pantalla completa</b> en cambio.
+        Esa muestra el fondo del tema (gradientes, imagen, vídeo) y el slide centrado.
       </li>
     </ol>
   )

@@ -128,7 +128,7 @@ export default function ProjectionPanel({ slide }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <OutputCard
               title="Pantalla completa"
-              subtitle="Para el proyector de la iglesia · 1920×1080"
+              subtitle="Proyector físico · fondo del tema"
               Icon={IconMonitor} accent="copper"
               isOpen={isOpen('background')}
               displays={displays}
@@ -136,8 +136,8 @@ export default function ProjectionPanel({ slide }) {
               onClose={() => close('background')}
             />
             <OutputCard
-              title="Overlay transparente"
-              subtitle="Para captura en OBS / streaming"
+              title="Overlay (Lower-Third)"
+              subtitle="Banda inferior transparente para OBS"
               Icon={IconLayers} accent="bible"
               isOpen={isOpen('overlay')}
               displays={displays}
