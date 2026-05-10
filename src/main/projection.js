@@ -102,34 +102,46 @@ function openProjection(opts = {}) {
                 || primary
 
   const isOverlay = mode === 'overlay'
+  const isStage   = mode === 'stage'
 
   // OVERLAY: estrategia robusta para OBS sin estorbar al usuario ni tapar
   // la ventana de Pantalla completa.
-  //
-  // Decisiones:
-  //   - SIEMPRE se posiciona en el monitor primario (en 0,0)
-  //   - SIEMPRE se minimiza tras cargar (independientemente del número de monitores)
-  //     OBS captura ventanas minimizadas con método "Windows 10 (1903+)" vía DWM.
-  //   - Esto garantiza que NUNCA se superponga a la ventana de Pantalla completa
-  //     que vive en el monitor secundario y mantiene control de z-order.
+  // STAGE: ventana opaca tipo presentador (slide actual + reloj + tiempo).
+  //        Va idealmente a un monitor secundario distinto al de Pantalla
+  //        completa, pero si no hay, abre como ventana normal con marco.
   const overlayBounds = { x: 0, y: 0, width: 1920, height: 1080 }
 
+  // Para stage: si hay 3+ monitores, usa el tercero. Si hay 2, usa primario.
+  // Si hay 1, abre ventana normal con marco a 1280x720 que el usuario puede mover.
+  let stageBounds = null
+  if (isStage) {
+    if (displays.length >= 3) {
+      const tertiary = displays.find(d => d.id !== primary.id && d.id !== target.id)
+      stageBounds = tertiary?.bounds || primary.bounds
+    } else {
+      stageBounds = { x: 100, y: 100, width: 1280, height: 720 }
+    }
+  }
+
   const win = new BrowserWindow({
-    x: isOverlay ? overlayBounds.x      : target.bounds.x,
-    y: isOverlay ? overlayBounds.y      : target.bounds.y,
-    width:  isOverlay ? overlayBounds.width  : target.bounds.width,
-    height: isOverlay ? overlayBounds.height : target.bounds.height,
-    fullscreen: !isOverlay && (opts.fullscreen ?? true),
-    frame: false,
+    x: isOverlay ? overlayBounds.x : isStage ? stageBounds.x : target.bounds.x,
+    y: isOverlay ? overlayBounds.y : isStage ? stageBounds.y : target.bounds.y,
+    width:  isOverlay ? overlayBounds.width  : isStage ? stageBounds.width  : target.bounds.width,
+    height: isOverlay ? overlayBounds.height : isStage ? stageBounds.height : target.bounds.height,
+    fullscreen: !isOverlay && !isStage && (opts.fullscreen ?? true),
+    frame: !isOverlay && isStage ? true : !isOverlay && !isStage ? false : false,
     transparent: isOverlay,
-    backgroundColor: isOverlay ? '#00000000' : '#000000',
-    hasShadow: false,
+    backgroundColor: isOverlay ? '#00000000' : '#0a0a0d',
+    hasShadow: !isOverlay,
     skipTaskbar: false,
     alwaysOnTop: false,
     resizable: !isOverlay,
     focusable: !isOverlay,
     show: !isOverlay,
-    title: isOverlay ? 'EclesiaPresenter — Lower-Third (OBS)' : 'EclesiaPresenter — Pantalla completa',
+    title:
+      isOverlay ? 'EclesiaPresenter — Lower-Third (OBS)' :
+      isStage   ? 'EclesiaPresenter — Stage Display' :
+                  'EclesiaPresenter — Pantalla completa',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

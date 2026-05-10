@@ -5,6 +5,7 @@ import {
 } from '../services/apiBible.js'
 import { useAppSettings, setSettings, pickDirectory } from '../services/appSettingsService.js'
 import { refreshImportedVersions } from '../services/bibleService.js'
+import { AVAILABLE_LOCALES } from '../services/i18n.js'
 import {
   IconX, IconImage, IconVideo, IconMonitor, IconBible, IconMusic,
   IconBroadcast, IconSettings, IconUpload, IconTrash, IconCheck,
@@ -115,6 +116,32 @@ function SectionAspecto() {
         Cambia el aspecto visual de la app. La proyección mantiene su tema independiente.
       </p>
 
+      {/* Idioma */}
+      <div className="section-h" style={{ marginBottom: 10 }}>
+        <h3>Idioma · Language · Idioma</h3>
+        <span className="sub">interfaz de la app</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 24 }}>
+        {AVAILABLE_LOCALES.map(loc => {
+          const active = settings.locale === loc.id
+          return (
+            <button key={loc.id} onClick={() => setSettings({ locale: loc.id })}
+              className={'template-card' + (active ? ' active' : '')}
+              style={{ padding: 14, textAlign: 'center' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--copper-200)', letterSpacing: '0.1em', marginBottom: 4 }}>
+                {loc.flag}
+              </div>
+              <div className="template-card-title">{loc.label}</div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Tema */}
+      <div className="section-h" style={{ marginBottom: 10 }}>
+        <h3>Tema visual</h3>
+        <span className="sub">{THEMES.length} esquemas</span>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
         {THEMES.map(t => {
           const active = settings.theme === t.id

@@ -10,6 +10,7 @@ import TextPanel from './components/TextPanel.jsx'
 import TransmisionPanel from './components/TransmisionPanel.jsx'
 import SlidePreview from './components/SlidePreview.jsx'
 import Topbar from './components/Topbar.jsx'
+import CommandPalette from './components/CommandPalette.jsx'
 import { useGlobalShortcuts } from './hooks/useShortcuts.js'
 import { selectSlide, setLive, useSlideStore } from './services/slideStore.js'
 import { syncFromMain } from './services/themeStore.js'
@@ -32,6 +33,7 @@ const BLACKOUT_SLIDE = { type: 'blackout', text: '', reference: '' }
 export default function App() {
   const [activePanel, setActivePanel] = useState('bible')
   const [settingsRev, setSettingsRev] = useState(0)
+  const [paletteOpen, setPaletteOpen] = useState(false)
   const { live } = useSlideStore()
 
   useEffect(() => {
@@ -43,6 +45,7 @@ export default function App() {
     onPanelChange: setActivePanel,
     onBlank: (kind) => setLive(kind === 'blackout' ? BLACKOUT_SLIDE : BLANK_SLIDE),
     onClearSlide: () => setLive(null),
+    onOpenPalette: () => setPaletteOpen(true),
   })
 
   const Panel = PANELS[activePanel] || BiblePanel
@@ -58,6 +61,11 @@ export default function App() {
           <SlidePreview />
         </div>
       </div>
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onPanelChange={setActivePanel}
+      />
     </>
   )
 }

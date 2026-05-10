@@ -40,13 +40,20 @@ function isTyping(target) {
  * Hook principal — registra los atajos globales en window.
  * Llama desde la raíz (App.jsx) UNA sola vez.
  */
-export function useGlobalShortcuts({ onPanelChange, onBlank, onClearSlide }) {
+export function useGlobalShortcuts({ onPanelChange, onBlank, onClearSlide, onOpenPalette }) {
   useEffect(() => {
     const handler = (e) => {
+      const ctrl = e.ctrlKey || e.metaKey
+
+      // Ctrl+B abre el Command Palette (también Ctrl+K para los que vienen de otras apps)
+      if (ctrl && (e.key === 'b' || e.key === 'B' || e.key === 'k' || e.key === 'K')) {
+        e.preventDefault()
+        onOpenPalette?.()
+        return
+      }
+
       // Permitir typing libre en inputs salvo Escape (que limpia)
       if (isTyping(e.target) && e.key !== 'Escape') return
-
-      const ctrl = e.ctrlKey || e.metaKey
 
       // Cambiar de panel
       if (ctrl && ['1','2','3','4','5','6','7','8'].includes(e.key)) {

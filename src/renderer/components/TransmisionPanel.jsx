@@ -90,21 +90,28 @@ export default function TransmisionPanel() {
               <h3>Ventanas de proyección</h3>
               <span className="sub">control directo</span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
               <OutputCard
                 title="Pantalla completa"
-                subtitle="Proyector físico · 1920×1080 con fondo del tema"
+                subtitle="Proyector físico · 1920×1080"
                 Icon={IconMonitor} accent="copper"
                 isOpen={isOpen('background')}
                 onOpen={() => open('background')}
                 onClose={() => close('background')} />
               <OutputCard
                 title="Overlay (Lower-Third)"
-                subtitle="Banda inferior transparente · capturable por OBS"
+                subtitle="Banda transparente para OBS"
                 Icon={IconLayers} accent="bible"
                 isOpen={isOpen('overlay')}
                 onOpen={() => open('overlay')}
                 onClose={() => close('overlay')} />
+              <OutputCard
+                title="Stage Display"
+                subtitle="Pantalla del músico/predicador"
+                Icon={IconBroadcast} accent="copper"
+                isOpen={isOpen('stage')}
+                onOpen={() => open('stage')}
+                onClose={() => close('stage')} />
             </div>
           </div>
 

@@ -2,11 +2,13 @@
 // Se persiste en localStorage. Los paths/picker dependen de IPC con el main process.
 
 import { useEffect, useState } from 'react'
+import { setLocale } from './i18n.js'
 
 const KEY = 'eclesia.appSettings'
 
 export const DEFAULT_SETTINGS = {
   theme: 'light',            // 'native' | 'dark' | 'light' | 'ocean' | 'rose'  (light = default principal)
+  locale: 'es',              // 'es' | 'en' | 'pt'
   defaultDisplayBackground: null, // displayId
   defaultDisplayOverlay:    null,
   storagePath: null,         // carpeta principal
@@ -58,11 +60,15 @@ function applySideEffects(patch) {
   if (patch.theme !== undefined) {
     document.documentElement.dataset.theme = patch.theme
   }
+  if (patch.locale !== undefined) {
+    setLocale(patch.locale)
+  }
 }
 
-// Aplica el tema actual al cargar (importante hacerlo aquí porque se importa desde main.jsx)
+// Aplica tema + locale al cargar (importante hacerlo aquí porque se importa desde main.jsx)
 if (typeof document !== 'undefined') {
   document.documentElement.dataset.theme = current.theme
+  setLocale(current.locale)
 }
 
 // --- Helpers para diálogos nativos (vía IPC) ---

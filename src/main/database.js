@@ -50,26 +50,60 @@ function init() {
   return db
 }
 
+// Seed inicial: solo himnos en dominio público (sin riesgo de copyright).
+// Se inserta UNA SOLA VEZ al primer arranque cuando la tabla songs está vacía.
+// El usuario puede editar / eliminar / reemplazar libremente.
 function seedIfEmpty() {
   const { count } = db.prepare('SELECT COUNT(*) as count FROM songs').get()
   if (count > 0) return
 
   const seedData = [
     {
-      title: 'Cuán Grande Es Él',
-      author: 'Stuart K. Hine',
-      tags: 'adoración,clásica',
+      title: 'Sublime Gracia',
+      author: 'John Newton (1779) · Trad. tradicional',
+      tags: 'himno,clásica,dominio público',
       sections: [
-        { type: 'verse', label: 'Estrofa 1', text: 'Señor mi Dios, al contemplar los cielos,\nEl firmamento y las estrellas mil' },
-        { type: 'chorus', label: 'Coro', text: 'Mi corazón entona la canción:\n¡Cuán grande es Él! ¡Cuán grande es Él!' },
+        { type: 'verse',  label: 'Estrofa 1', text: 'Sublime gracia del Señor\nque a un infeliz salvó;\nFui ciego, mas hoy veo yo,\nperdido y Él me halló.' },
+        { type: 'verse',  label: 'Estrofa 2', text: 'Su gracia me enseñó a temer,\nmis dudas ahuyentó;\n¡Oh, cuán precioso fue a mi ser\ncuando Él me transformó!' },
+        { type: 'verse',  label: 'Estrofa 3', text: 'En los peligros o aflicción\nque yo he tenido aquí,\nsu gracia siempre me libró\ny me guiará feliz.' },
+        { type: 'verse',  label: 'Estrofa 4', text: 'Y cuando en Sion por siglos mil,\nbrillando esté cual sol,\nyo cantaré por siempre allí\nsu amor que me salvó.' },
       ],
     },
     {
-      title: 'Grande y Eterno',
-      author: 'Marcos Witt',
-      tags: 'alabanza',
+      title: 'Castillo Fuerte es Nuestro Dios',
+      author: 'Martín Lutero (1529) · Trad. tradicional',
+      tags: 'himno,clásica,dominio público,reforma',
       sections: [
-        { type: 'verse', label: 'Estrofa', text: 'Grande y eterno es nuestro Dios,\nDigno de toda honra y gloria' },
+        { type: 'verse',  label: 'Estrofa 1', text: 'Castillo fuerte es nuestro Dios,\ndefensa y buen escudo;\ncon su poder nos librará\nen este trance agudo.' },
+        { type: 'verse',  label: 'Estrofa 2', text: 'Con furia y con afán\nacósanos Satán;\npor armas deja ver\nastucia y gran poder;\ncual él no hay en la tierra.' },
+        { type: 'verse',  label: 'Estrofa 3', text: 'Nuestro valor es nada aquí,\ncon él todo es perdido;\nmas por nosotros pugnará\nde Dios el Escogido.' },
+      ],
+    },
+    {
+      title: 'A Dios Sea la Gloria',
+      author: 'Fanny J. Crosby (1875) · Trad. tradicional',
+      tags: 'himno,alabanza,dominio público',
+      sections: [
+        { type: 'verse',  label: 'Estrofa 1', text: 'A Dios sea gloria, grandes cosas Él hizo,\ntanto nos amó que a su Hijo nos dio,\nquien dio su vida nuestro ser redimiendo,\ny las puertas del cielo nos abrió.' },
+        { type: 'chorus', label: 'Coro',      text: 'Alabadle, alabadle, oh tierra al Señor;\nAlabadle, alabadle, grande es su amor.\nVenid, oh familias del mundo, venid,\ny por Cristo a nuestro Padre acudid;\npor Él gloria a Dios cantad.' },
+      ],
+    },
+    {
+      title: 'Cuán Glorioso es Mi Cristo',
+      author: 'Edmond L. Budry (1884) · Trad. tradicional',
+      tags: 'himno,resurrección,dominio público',
+      sections: [
+        { type: 'verse',  label: 'Estrofa 1', text: 'Cuán glorioso es mi Cristo,\nEl Cordero inmaculado,\nQuien por mí fue crucificado;\nMi alma proclamará el amor\ndel Señor y Salvador.' },
+        { type: 'chorus', label: 'Coro',      text: '¡Aleluya, aleluya, aleluya!\nEs Jesús el vencedor.\n¡Aleluya, aleluya, aleluya!\nGloria a Cristo el Salvador.' },
+      ],
+    },
+    {
+      title: 'Santo, Santo, Santo',
+      author: 'Reginald Heber (1826) · Trad. tradicional',
+      tags: 'himno,adoración,dominio público,trinidad',
+      sections: [
+        { type: 'verse',  label: 'Estrofa 1', text: 'Santo, santo, santo, Señor omnipotente,\nsiempre el labio mío loores te dará.\nSanto, santo, santo, te adoro reverente,\nDios en tres personas, bendita Trinidad.' },
+        { type: 'verse',  label: 'Estrofa 2', text: 'Santo, santo, santo, en numeroso coro\nsantos escogidos te adoran sin cesar.\nDe alegría llenos, y sus coronas de oro\nrinden ante el trono y el cristalino mar.' },
       ],
     },
   ]
@@ -79,9 +113,15 @@ function seedIfEmpty() {
     VALUES (@title, @author, @tags, @sections)
   `)
 
-  for (const song of seedData) {
-    insert.run({ ...song, sections: JSON.stringify(song.sections) })
-  }
+  // Transacción para insertar todas atómicamente
+  const insertMany = db.transaction((songs) => {
+    for (const song of songs) {
+      insert.run({ ...song, sections: JSON.stringify(song.sections) })
+    }
+  })
+  insertMany(seedData)
+
+  console.log(`[db] Seeded ${seedData.length} canciones de inicio (himnos en dominio público)`)
 }
 
 // Parsear filas desde SQLite (sections viene como string JSON)
