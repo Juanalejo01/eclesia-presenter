@@ -13,7 +13,7 @@ const PLANS = [
     period: 'siempre',
     description: 'Perfecto para empezar y para iglesias pequeñas.',
     features: [
-      '1 biblia (RVR 1909, dominio público)',
+      '3 biblias (RVR 1960, NVI, RVR 1909)',
       'Hasta 5 canciones',
       'Proyección a pantalla completa',
       'Lista del día básica',

@@ -27,7 +27,7 @@ export default function PricingTeaser() {
               </div>
             </div>
             <ul className="space-y-2 text-sm text-ink-2 flex-1 mb-6">
-              <Bullet>1 biblia (RVR 1909)</Bullet>
+              <Bullet>3 biblias (RVR 1960, NVI, RVR 1909)</Bullet>
               <Bullet>5 canciones máximo</Bullet>
               <Bullet>Proyección básica</Bullet>
               <Bullet>Marca de agua sutil</Bullet>
