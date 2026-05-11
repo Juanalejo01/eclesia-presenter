@@ -5,6 +5,7 @@
 const { app, BrowserWindow, screen } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const { pathToFileURL } = require('url')
 
 const isDev = !app.isPackaged
 const projections = new Map()  // mode → { window, options }
@@ -89,10 +90,15 @@ function getDisplays() {
 }
 
 function buildWindowURL(mode) {
+  // En producción, construir URL file:// correctamente.
+  // pathToFileURL() produce `file:///C:/path/index.html` con el formato que Chromium
+  // requiere en Windows (3 slashes + forward slashes). Concatenar `file://` + ruta
+  // cruda con backslashes (como teníamos antes) producía una URL inválida que cargaba
+  // bien en algunos casos pero fallaba en producción dentro de app.asar.
   const base = isDev
-    ? 'http://localhost:5173'
-    : `file://${path.join(__dirname, '../../dist/renderer/index.html')}`
-  return `${base}/#/projection?mode=${mode}`
+    ? 'http://localhost:5173/'
+    : pathToFileURL(path.join(__dirname, '../../dist/renderer/index.html')).toString()
+  return `${base}#/projection?mode=${mode}`
 }
 
 /**

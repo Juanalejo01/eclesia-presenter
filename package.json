@@ -15,6 +15,7 @@
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder --win portable",
     "dist:installer": "npm run build && electron-builder --win nsis",
+    "dist:all": "npm run build && electron-builder --win portable nsis",
     "preview": "vite preview"
   },
   "dependencies": {
