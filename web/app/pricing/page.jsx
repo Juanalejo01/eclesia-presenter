@@ -41,8 +41,8 @@ const PLANS = [
       'Soporte por email',
       'Updates incluidos',
     ],
-    cta: 'Empezar prueba',
-    href: '/login?plan=pro_monthly',
+    cta: 'Suscribirse mensual',
+    href: '/checkout?plan=pro_monthly',
     accent: false,
   },
   {
@@ -60,8 +60,8 @@ const PLANS = [
       'Soporte prioritario',
       'Descuento para CCLI/integradores',
     ],
-    cta: 'Empezar prueba',
-    href: '/login?plan=pro_yearly',
+    cta: 'Suscribirse anual',
+    href: '/checkout?plan=pro_yearly',
     accent: true,
   },
   {
@@ -79,7 +79,7 @@ const PLANS = [
       'Soporte prioritario de por vida',
     ],
     cta: 'Comprar Lifetime',
-    href: '/login?plan=lifetime',
+    href: '/checkout?plan=lifetime',
     accent: false,
   },
 ]
