@@ -53,9 +53,9 @@ const DEFAULT_THEME = {
   //   'cover'   → llena el frame recortando partes (default, mejor para horizontales)
   //   'contain' → muestra el medio entero con barras laterales (mejor para verticales)
   //   'fill'    → estira hasta llenar (puede deformar)
-  imageFit: 'cover',
-  videoFit: 'cover',
-  bgImageBlur: 0,                 // si es contain, fondo borroso para llenar las barras
+  imageFit: 'contain',            // default: mostrar imagen completa con barras (mejor para verticales)
+  videoFit: 'contain',
+  bgImageBlur: 16,                // default: fondo borroso para tapar las barras (efecto Spotify/iOS)
   fontFamily: '"Cormorant Garamond", serif',
   fontSize: 64,
   fontColor: '#ffffff',

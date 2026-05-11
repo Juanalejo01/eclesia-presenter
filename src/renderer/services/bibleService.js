@@ -71,7 +71,7 @@ const importedCache = new Map()   // versionId → array de libros (biblia impor
 const remoteChapterCache = new Map()  // `${bibleId}::${bookIndex}::${chapterNum}` → array de strings
 const remoteSkeletonCache = new Map() // bibleId → libros con metadata (sin texto)
 let importedVersions = []          // metas de biblias importadas (cargadas via IPC en boot)
-let activeVersionId = 'rvr1909'
+let activeVersionId = 'rvr1960'  // default: la versión más usada en iglesias hispanohablantes
 
 /**
  * Refresca el listado de Biblias importadas leyendo el registry del main.

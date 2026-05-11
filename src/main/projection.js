@@ -22,6 +22,21 @@ function loadPersistedTheme() {
     if (data && typeof data === 'object') {
       // Merge con defaults (en caso de añadir keys nuevas en updates)
       currentTheme = { ...defaultTheme(), ...data, overlay: { ...defaultTheme().overlay, ...(data.overlay || {}) } }
+
+      // Sanity check: si el theme persistido es trivial (solid + negro absoluto sin imagen/video),
+      // probablemente sea un theme antiguo o corrupto que da "pantalla negra" al abrir el proyector.
+      // Reseteamos a defaults visuales (gradiente azul) — el usuario puede cambiar el tema desde Proyección.
+      if (
+        currentTheme.bgType === 'solid' &&
+        currentTheme.bgColor === '#000000' &&
+        !currentTheme.bgImage &&
+        !currentTheme.bgVideo
+      ) {
+        const d = defaultTheme()
+        currentTheme.bgType = d.bgType
+        currentTheme.bgColor = d.bgColor
+        currentTheme.bgGradient = d.bgGradient
+      }
     }
   } catch (e) {
     console.warn('Could not load persisted theme:', e.message)
@@ -48,9 +63,9 @@ function defaultTheme() {
     bgGradient: ['#0a1620', '#1e3a5f'],
     bgImage: null,
     bgVideo: null,
-    imageFit: 'cover',
-    videoFit: 'cover',
-    bgImageBlur: 0,
+    imageFit: 'contain',
+    videoFit: 'contain',
+    bgImageBlur: 16,
     fontFamily: '"Cormorant Garamond", serif',
     fontSize: 64,
     fontColor: '#ffffff',

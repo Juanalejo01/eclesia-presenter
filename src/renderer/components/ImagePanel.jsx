@@ -19,8 +19,8 @@ export default function ImagePanel({ onSendSlide }) {
   const [selected, setSelected] = useState(null)
   const [caption, setCaption] = useState('')
   const [reference, setReference] = useState('')
-  const [imageFit, setImageFit] = useState('cover')
-  const [bgImageBlur, setBgImageBlur] = useState(0)
+  const [imageFit, setImageFit] = useState('contain')
+  const [bgImageBlur, setBgImageBlur] = useState(16)
   const [dragActive, setDragActive] = useState(false)
   const dragCounter = useRef(0)
 

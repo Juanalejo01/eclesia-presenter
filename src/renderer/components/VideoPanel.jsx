@@ -21,7 +21,7 @@ export default function VideoPanel({ onSendSlide }) {
   const [reference, setReference] = useState('')
   const [loop, setLoop] = useState(true)
   const [muted, setMuted] = useState(true)
-  const [videoFit, setVideoFit] = useState('cover')
+  const [videoFit, setVideoFit] = useState('contain')
   const [dragActive, setDragActive] = useState(false)
   const dragCounter = useRef(0)
 
