@@ -24,25 +24,40 @@ export default function RegisterForm() {
     const supabase = createClient()
     const callbackUrl = `${window.location.origin}/auth/callback?next=/cuenta${plan ? `&plan=${plan}` : ''}`
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: callbackUrl,
-        shouldCreateUser: true,
-        data: {
-          // Estos datos van a auth.users.raw_user_meta_data,
-          // y el trigger handle_new_user los copia a profiles.
-          name: name.trim() || null,
-          organization: organization.trim() || null,
-        },
-      },
-    })
+    // Timeout defensivo: si Supabase no responde en 15s, cancelamos
+    // y mostramos error al usuario. Sin esto el botón quedaba en "Creando..."
+    // indefinidamente si había problema de red o CORS.
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('La petición a Supabase tardó más de 15 segundos. Verifica tu conexión y que los Redirect URLs estén configurados en Supabase → Auth → URL Configuration.')), 15000)
+    )
 
-    setLoading(false)
-    if (error) {
-      setError(error.message)
-    } else {
-      setSent(true)
+    try {
+      const result = await Promise.race([
+        supabase.auth.signInWithOtp({
+          email: email.trim(),
+          options: {
+            emailRedirectTo: callbackUrl,
+            shouldCreateUser: true,
+            data: {
+              name: name.trim() || null,
+              organization: organization.trim() || null,
+            },
+          },
+        }),
+        timeoutPromise,
+      ])
+
+      setLoading(false)
+      if (result.error) {
+        console.error('[register] Supabase error:', result.error)
+        setError(result.error.message || JSON.stringify(result.error))
+      } else {
+        setSent(true)
+      }
+    } catch (e) {
+      setLoading(false)
+      console.error('[register] Exception:', e)
+      setError(e?.message || String(e))
     }
   }
 

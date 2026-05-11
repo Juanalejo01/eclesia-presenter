@@ -23,19 +23,34 @@ export default function LoginForm() {
     const supabase = createClient()
     const callbackUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}${plan ? `&plan=${plan}` : ''}`
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: callbackUrl,
-        shouldCreateUser: true,  // crea cuenta si no existe (magic link = login + signup)
-      },
-    })
+    // Timeout defensivo de 15s para no dejar al user esperando indefinidamente.
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('La petición a Supabase tardó más de 15 segundos. Verifica tu conexión y que los Redirect URLs estén configurados en Supabase → Auth → URL Configuration.')), 15000)
+    )
 
-    setLoading(false)
-    if (error) {
-      setError(error.message)
-    } else {
-      setSent(true)
+    try {
+      const result = await Promise.race([
+        supabase.auth.signInWithOtp({
+          email: email.trim(),
+          options: {
+            emailRedirectTo: callbackUrl,
+            shouldCreateUser: true,  // crea cuenta si no existe (magic link = login + signup)
+          },
+        }),
+        timeoutPromise,
+      ])
+
+      setLoading(false)
+      if (result.error) {
+        console.error('[login] Supabase error:', result.error)
+        setError(result.error.message || JSON.stringify(result.error))
+      } else {
+        setSent(true)
+      }
+    } catch (e) {
+      setLoading(false)
+      console.error('[login] Exception:', e)
+      setError(e?.message || String(e))
     }
   }
 
