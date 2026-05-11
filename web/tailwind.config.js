@@ -24,7 +24,8 @@ module.exports = {
           600: '#5c2d0a',
           700: '#3e2411',
         },
-        text: {
+        // 'ink' en lugar de 'text' para evitar conflictos con utilities text-*
+        ink: {
           1: '#f4e6d7',
           2: '#c9b29c',
           3: '#8a7866',
@@ -32,9 +33,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Times New Roman', 'serif'],
-        sans: ['Geist', '-apple-system', 'system-ui', 'sans-serif'],
-        mono: ['"Geist Mono"', '"SF Mono"', 'monospace'],
+        display: ['Cormorant Garamond', 'Times New Roman', 'serif'],
+        sans: ['Geist', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono', 'SF Mono', 'monospace'],
       },
       backgroundImage: {
         'hero-glow': 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,121,74,0.18), transparent 60%)',

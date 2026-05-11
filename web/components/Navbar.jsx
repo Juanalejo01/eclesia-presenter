@@ -8,30 +8,30 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-3 group">
           <Logo size={28} />
           <span className="font-semibold tracking-tight">
-            Eclesia<span className="text-text-3 font-normal">Presenter</span>
+            Eclesia<span className="text-ink-3 font-normal">Presenter</span>
           </span>
-          <span className="hidden md:inline text-[10px] font-mono text-text-3 uppercase tracking-wider px-2 py-0.5 border border-copper-300/20 rounded">
+          <span className="hidden md:inline text-[10px] font-mono text-ink-3 uppercase tracking-wider px-2 py-0.5 border border-copper-300/20 rounded">
             v 0.2
           </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm">
-          <Link href="/#features" className="text-text-2 hover:text-text-1 link-underline transition-colors">
+          <Link href="/#features" className="text-ink-2 hover:text-ink-1 transition-colors">
             Funciones
           </Link>
-          <Link href="/pricing" className="text-text-2 hover:text-text-1 link-underline transition-colors">
+          <Link href="/pricing" className="text-ink-2 hover:text-ink-1 transition-colors">
             Precios
           </Link>
-          <Link href="/docs" className="text-text-2 hover:text-text-1 link-underline transition-colors">
+          <Link href="/docs" className="text-ink-2 hover:text-ink-1 transition-colors">
             Documentación
           </Link>
-          <Link href="/download" className="text-text-2 hover:text-text-1 link-underline transition-colors">
+          <Link href="/download" className="text-ink-2 hover:text-ink-1 transition-colors">
             Descargar
           </Link>
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link href="/login" className="hidden md:inline text-sm text-text-2 hover:text-text-1 transition-colors">
+          <Link href="/login" className="hidden md:inline text-sm text-ink-2 hover:text-ink-1 transition-colors">
             Iniciar sesión
           </Link>
           <Link

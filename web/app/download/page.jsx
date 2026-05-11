@@ -12,10 +12,10 @@ export default function DownloadPage() {
         <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-3">
           v 0.2.0 — Beta
         </div>
-        <h1 className="font-display text-5xl md:text-6xl text-text-1 mb-4">
+        <h1 className="font-display text-5xl md:text-6xl text-ink-1 mb-4">
           Descarga <em className="italic text-copper-200">EclesiaPresenter</em>
         </h1>
-        <p className="text-text-2 text-lg max-w-2xl mx-auto">
+        <p className="text-ink-2 text-lg max-w-2xl mx-auto">
           Versión portable: doble click y a usar. Sin instalación, sin registro.
         </p>
       </div>
@@ -35,9 +35,9 @@ export default function DownloadPage() {
           </div>
 
           <div className="flex-1 text-center md:text-left">
-            <h2 className="font-display text-3xl text-text-1 mb-2">Windows 10 / 11 · x64</h2>
-            <p className="text-text-3 text-sm mb-1">EclesiaPresenter-0.2.0-portable.exe</p>
-            <p className="text-text-3 text-xs font-mono">~84 MB · SHA256 verificable</p>
+            <h2 className="font-display text-3xl text-ink-1 mb-2">Windows 10 / 11 · x64</h2>
+            <p className="text-ink-3 text-sm mb-1">EclesiaPresenter-0.2.0-portable.exe</p>
+            <p className="text-ink-3 text-xs font-mono">~84 MB · SHA256 verificable</p>
           </div>
 
           <Link
@@ -55,16 +55,16 @@ export default function DownloadPage() {
 
       {/* SmartScreen warning */}
       <div className="rounded-xl border border-copper-300/20 bg-bg-2 p-6 mb-8">
-        <h3 className="font-semibold text-text-1 mb-3 flex items-center gap-2">
+        <h3 className="font-semibold text-ink-1 mb-3 flex items-center gap-2">
           <span className="text-copper-200">⚠</span> Aviso de Windows SmartScreen
         </h3>
-        <p className="text-sm text-text-2 leading-relaxed mb-3">
+        <p className="text-sm text-ink-2 leading-relaxed mb-3">
           Al ejecutar el .exe por primera vez, Windows puede mostrar un aviso de SmartScreen
           (porque la app es nueva y no tiene firma comercial todavía). Es seguro — el código
           es público en GitHub.
         </p>
-        <p className="text-sm text-text-2 leading-relaxed">
-          <strong className="text-text-1">Solución:</strong> click en
+        <p className="text-sm text-ink-2 leading-relaxed">
+          <strong className="text-ink-1">Solución:</strong> click en
           {' "Más información"'} → {' "Ejecutar de todas formas"'}.
         </p>
       </div>
@@ -72,10 +72,10 @@ export default function DownloadPage() {
       {/* System requirements + alternatives */}
       <div className="grid md:grid-cols-2 gap-5 mb-12">
         <div className="rounded-xl border border-copper-300/10 bg-bg-2 p-6">
-          <h3 className="font-mono text-xs uppercase tracking-widest text-text-3 mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-widest text-ink-3 mb-4">
             Requisitos
           </h3>
-          <ul className="space-y-2 text-sm text-text-2">
+          <ul className="space-y-2 text-sm text-ink-2">
             <li>· Windows 10 versión 1903+ o Windows 11</li>
             <li>· 4 GB RAM mínimo (8 GB recomendado)</li>
             <li>· 200 MB de disco libre</li>
@@ -84,16 +84,16 @@ export default function DownloadPage() {
           </ul>
         </div>
         <div className="rounded-xl border border-copper-300/10 bg-bg-2 p-6">
-          <h3 className="font-mono text-xs uppercase tracking-widest text-text-3 mb-4">
+          <h3 className="font-mono text-xs uppercase tracking-widest text-ink-3 mb-4">
             ¿Otros sistemas?
           </h3>
-          <ul className="space-y-2 text-sm text-text-2">
-            <li>· <span className="text-text-3">macOS:</span> en roadmap (próximas versiones)</li>
-            <li>· <span className="text-text-3">Linux:</span> en roadmap (próximas versiones)</li>
+          <ul className="space-y-2 text-sm text-ink-2">
+            <li>· <span className="text-ink-3">macOS:</span> en roadmap (próximas versiones)</li>
+            <li>· <span className="text-ink-3">Linux:</span> en roadmap (próximas versiones)</li>
             <li>
-              · <span className="text-text-3">Build manual:</span>{' '}
+              · <span className="text-ink-3">Build manual:</span>{' '}
               <a href="https://github.com/Juanalejo01/eclesia-presenter#desarrollo" target="_blank" rel="noreferrer"
-                className="text-copper-200 hover:text-copper-100 link-underline">
+                className="text-copper-200 hover:text-copper-100">
                 ver instrucciones
               </a>
             </li>
@@ -102,8 +102,8 @@ export default function DownloadPage() {
       </div>
 
       <div className="text-center">
-        <p className="text-sm text-text-3 mb-2">¿Tienes problemas con la descarga?</p>
-        <Link href="/docs" className="text-sm text-copper-200 hover:text-copper-100 link-underline">
+        <p className="text-sm text-ink-3 mb-2">¿Tienes problemas con la descarga?</p>
+        <Link href="/docs" className="text-sm text-copper-200 hover:text-copper-100">
           Ver guía de instalación →
         </Link>
       </div>

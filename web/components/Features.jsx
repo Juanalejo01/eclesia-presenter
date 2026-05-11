@@ -55,11 +55,11 @@ export default function Features() {
           <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-3">
             Todo lo que necesitas
           </div>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-text-1 mb-4 leading-tight">
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-ink-1 mb-4 leading-tight">
             Diseñado por personas<br/>
-            <em className="italic text-copper-200 not-italic-impossible">que sirven en iglesia</em>
+            <em className="italic text-copper-200">que sirven en iglesia</em>
           </h2>
-          <p className="max-w-2xl mx-auto text-text-2 leading-relaxed">
+          <p className="max-w-2xl mx-auto text-ink-2 leading-relaxed">
             Cada panel resuelve un problema real: desde proyectar un versículo entre canciones
             hasta hacer captura transparente para tu transmisión en vivo.
           </p>
@@ -76,10 +76,10 @@ export default function Features() {
                          hover:translate-y-[-2px]"
             >
               <div className="text-3xl mb-3">{f.icon}</div>
-              <h3 className="font-semibold text-text-1 mb-2 text-lg group-hover:text-copper-100 transition-colors">
+              <h3 className="font-semibold text-ink-1 mb-2 text-lg group-hover:text-copper-100 transition-colors">
                 {f.title}
               </h3>
-              <p className="text-sm text-text-3 leading-relaxed">{f.desc}</p>
+              <p className="text-sm text-ink-3 leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>

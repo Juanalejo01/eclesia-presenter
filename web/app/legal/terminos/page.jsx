@@ -3,12 +3,12 @@ export const metadata = { title: 'Términos de uso — EclesiaPresenter' }
 export default function Terms() {
   return (
     <article className="container mx-auto px-6 py-20 max-w-3xl prose-invert">
-      <h1 className="font-display text-5xl text-text-1 mb-2">Términos de uso</h1>
-      <p className="text-xs font-mono text-text-3 uppercase tracking-widest mb-12">
+      <h1 className="font-display text-5xl text-ink-1 mb-2">Términos de uso</h1>
+      <p className="text-xs font-mono text-ink-3 uppercase tracking-widest mb-12">
         Última actualización: {new Date().toLocaleDateString('es-ES')}
       </p>
 
-      <div className="space-y-6 text-text-2 leading-relaxed">
+      <div className="space-y-6 text-ink-2 leading-relaxed">
         <Section title="1. Aceptación">
           Al usar EclesiaPresenter aceptas estos términos. Si no estás de acuerdo,
           no instales ni utilices el software.
@@ -63,7 +63,7 @@ export default function Terms() {
         </Section>
 
         <Section title="10. Contacto">
-          <a href="mailto:hola@eclesiapresenter.com" className="text-copper-200 hover:text-copper-100 link-underline">
+          <a href="mailto:hola@eclesiapresenter.com" className="text-copper-200 hover:text-copper-100">
             hola@eclesiapresenter.com
           </a>
         </Section>
@@ -75,7 +75,7 @@ export default function Terms() {
 function Section({ title, children }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-text-1 mb-2">{title}</h2>
+      <h2 className="font-display text-2xl text-ink-1 mb-2">{title}</h2>
       <p>{children}</p>
     </section>
   )

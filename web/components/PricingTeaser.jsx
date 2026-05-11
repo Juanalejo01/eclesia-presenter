@@ -8,10 +8,10 @@ export default function PricingTeaser() {
           <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-3">
             Precios honestos
           </div>
-          <h2 className="font-display text-4xl md:text-5xl text-text-1 mb-4">
-            Free para siempre · <em className="italic text-copper-200 not-italic-impossible">Pro</em> cuando lo necesites
+          <h2 className="font-display text-4xl md:text-5xl text-ink-1 mb-4">
+            Free para siempre · <em className="italic text-copper-200">Pro</em> cuando lo necesites
           </h2>
-          <p className="max-w-2xl mx-auto text-text-2">
+          <p className="max-w-2xl mx-auto text-ink-2">
             Empieza gratis. Cuando tu iglesia crezca, desbloquea biblias modernas, sin marca de agua y soporte directo.
           </p>
         </div>
@@ -20,13 +20,13 @@ export default function PricingTeaser() {
           {/* Free */}
           <div className="rounded-2xl border border-copper-300/15 bg-bg-2 p-8 flex flex-col">
             <div className="mb-6">
-              <div className="text-xs font-mono uppercase tracking-widest text-text-3 mb-2">Free</div>
+              <div className="text-xs font-mono uppercase tracking-widest text-ink-3 mb-2">Free</div>
               <div className="flex items-baseline gap-1">
-                <span className="font-display text-5xl text-text-1">0€</span>
-                <span className="text-text-3 text-sm">/ siempre</span>
+                <span className="font-display text-5xl text-ink-1">0€</span>
+                <span className="text-ink-3 text-sm">/ siempre</span>
               </div>
             </div>
-            <ul className="space-y-2 text-sm text-text-2 flex-1 mb-6">
+            <ul className="space-y-2 text-sm text-ink-2 flex-1 mb-6">
               <Bullet>1 biblia (RVR 1909)</Bullet>
               <Bullet>5 canciones máximo</Bullet>
               <Bullet>Proyección básica</Bullet>
@@ -37,7 +37,7 @@ export default function PricingTeaser() {
               href="/download"
               className="inline-flex items-center justify-center h-11 rounded-lg
                          border border-copper-300/20 bg-bg-3
-                         text-text-1 font-medium hover:bg-bg-4 transition-all"
+                         text-ink-1 font-medium hover:bg-bg-4 transition-all"
             >
               Descargar gratis
             </Link>
@@ -55,12 +55,12 @@ export default function PricingTeaser() {
             <div className="mb-6">
               <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-2">Pro</div>
               <div className="flex items-baseline gap-1">
-                <span className="font-display text-5xl text-text-1">9€</span>
-                <span className="text-text-3 text-sm">/ mes</span>
+                <span className="font-display text-5xl text-ink-1">9€</span>
+                <span className="text-ink-3 text-sm">/ mes</span>
               </div>
               <p className="text-xs text-copper-200 mt-1">o 79€/año (ahorra ~27%)</p>
             </div>
-            <ul className="space-y-2 text-sm text-text-2 flex-1 mb-6">
+            <ul className="space-y-2 text-sm text-ink-2 flex-1 mb-6">
               <Bullet copper>10 biblias modernas (RVR60, NVI, NTV…)</Bullet>
               <Bullet copper>Canciones ilimitadas + SQLite</Bullet>
               <Bullet copper>Lower-third OBS personalizable</Bullet>
@@ -81,7 +81,7 @@ export default function PricingTeaser() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-text-3 mt-10">
+        <p className="text-center text-xs text-ink-3 mt-10">
           Pago seguro vía Stripe · Cancela cuando quieras · 30 días de garantía
         </p>
       </div>

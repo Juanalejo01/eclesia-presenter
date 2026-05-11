@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="grain min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1 relative z-10">{children}</main>
         <Footer />

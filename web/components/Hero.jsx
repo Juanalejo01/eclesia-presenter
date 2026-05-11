@@ -4,7 +4,7 @@ export default function Hero() {
   return (
     <section className="relative pt-20 pb-32 overflow-hidden">
       {/* Background glow */}
-      <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" />
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-copper-300/30 to-transparent" />
 
       <div className="container relative mx-auto px-6 max-w-6xl">
@@ -21,13 +21,13 @@ export default function Hero() {
         {/* Title */}
         <h1 className="text-center font-display font-medium
                        text-5xl sm:text-6xl md:text-7xl lg:text-8xl
-                       leading-[0.95] tracking-tight mb-6 hero-text">
+                       leading-[0.95] tracking-tight mb-6 font-display">
           La proyección de tu<br/>
-          iglesia, <em className="italic text-copper-200 not-italic-impossible">profesional</em>
+          iglesia, <em className="italic text-copper-200">profesional</em>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-center max-w-2xl mx-auto text-lg md:text-xl text-text-2 leading-relaxed mb-10">
+        <p className="text-center max-w-2xl mx-auto text-lg md:text-xl text-ink-2 leading-relaxed mb-10">
           Biblia, canciones, videos y avisos en una sola app.
           Sin servidores, sin latencia, capturable directamente por OBS.
           Hecho para iglesias hispanohablantes.
@@ -49,7 +49,7 @@ export default function Hero() {
             href="/pricing"
             className="inline-flex items-center justify-center gap-2 px-6 h-12 rounded-lg
                        border border-copper-300/30 bg-bg-2/50 backdrop-blur
-                       text-text-1 font-medium
+                       text-ink-1 font-medium
                        hover:bg-bg-3 hover:border-copper-300/50 transition-all"
           >
             Ver planes Pro
@@ -66,10 +66,10 @@ export default function Hero() {
             {/* Frame top bar */}
             <div className="absolute top-0 left-0 right-0 h-10 bg-bg-1/80 border-b border-copper-300/10
                             flex items-center px-4 gap-2">
-              <span className="w-3 h-3 rounded-full bg-text-4/40" />
-              <span className="w-3 h-3 rounded-full bg-text-4/40" />
-              <span className="w-3 h-3 rounded-full bg-text-4/40" />
-              <span className="ml-4 text-xs font-mono text-text-3">
+              <span className="w-3 h-3 rounded-full bg-ink-4/40" />
+              <span className="w-3 h-3 rounded-full bg-ink-4/40" />
+              <span className="w-3 h-3 rounded-full bg-ink-4/40" />
+              <span className="ml-4 text-xs font-mono text-ink-3">
                 EclesiaPresenter · Salmos 23:1
               </span>
             </div>
@@ -77,7 +77,7 @@ export default function Hero() {
             {/* Fake projection content */}
             <div className="absolute inset-0 pt-10 flex items-center justify-center px-12">
               <div className="text-center max-w-3xl">
-                <p className="font-display text-3xl md:text-5xl lg:text-6xl leading-tight text-text-1 mb-6">
+                <p className="font-display text-3xl md:text-5xl lg:text-6xl leading-tight text-ink-1 mb-6">
                   &ldquo;Jehová es mi pastor;<br/>nada me faltará.&rdquo;
                 </p>
                 <p className="font-mono text-xs md:text-sm tracking-[0.2em] text-copper-200 uppercase">
@@ -111,7 +111,7 @@ export default function Hero() {
           ].map((s, i) => (
             <div key={i} className="text-center">
               <div className="font-display text-4xl md:text-5xl text-copper-100 mb-1">{s.value}</div>
-              <div className="text-xs font-mono uppercase tracking-wider text-text-3">{s.label}</div>
+              <div className="text-xs font-mono uppercase tracking-wider text-ink-3">{s.label}</div>
             </div>
           ))}
         </div>

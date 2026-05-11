@@ -50,10 +50,10 @@ export default function DocsPage() {
         <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-3">
           Documentación
         </div>
-        <h1 className="font-display text-5xl text-text-1 mb-4">
+        <h1 className="font-display text-5xl text-ink-1 mb-4">
           Aprende a usar <em className="italic text-copper-200">EclesiaPresenter</em>
         </h1>
-        <p className="text-text-2 text-lg">
+        <p className="text-ink-2 text-lg">
           Guías paso a paso · vídeo-tutoriales · troubleshooting.
         </p>
       </div>
@@ -61,13 +61,13 @@ export default function DocsPage() {
       <div className="grid sm:grid-cols-2 gap-6">
         {SECTIONS.map((s, i) => (
           <div key={i} className="rounded-xl border border-copper-300/10 bg-bg-2 p-6">
-            <h2 className="font-display text-2xl text-text-1 mb-4">{s.title}</h2>
+            <h2 className="font-display text-2xl text-ink-1 mb-4">{s.title}</h2>
             <ul className="space-y-2 text-sm">
               {s.items.map((item, j) => (
                 <li key={j}>
                   <Link
                     href={item.href}
-                    className="text-text-2 hover:text-copper-200 link-underline transition-colors"
+                    className="text-ink-2 hover:text-copper-200 transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -79,10 +79,10 @@ export default function DocsPage() {
       </div>
 
       <div className="mt-16 text-center rounded-2xl border border-copper-300/10 bg-bg-2 p-10">
-        <h3 className="font-display text-2xl text-text-1 mb-3">
+        <h3 className="font-display text-2xl text-ink-1 mb-3">
           ¿No encuentras lo que buscas?
         </h3>
-        <p className="text-text-2 mb-6">
+        <p className="text-ink-2 mb-6">
           Escríbenos directamente y te ayudamos.
         </p>
         <a

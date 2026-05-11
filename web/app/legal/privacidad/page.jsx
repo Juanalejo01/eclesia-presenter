@@ -3,12 +3,12 @@ export const metadata = { title: 'Política de privacidad — EclesiaPresenter' 
 export default function Privacy() {
   return (
     <article className="container mx-auto px-6 py-20 max-w-3xl">
-      <h1 className="font-display text-5xl text-text-1 mb-2">Política de privacidad</h1>
-      <p className="text-xs font-mono text-text-3 uppercase tracking-widest mb-12">
+      <h1 className="font-display text-5xl text-ink-1 mb-2">Política de privacidad</h1>
+      <p className="text-xs font-mono text-ink-3 uppercase tracking-widest mb-12">
         Última actualización: {new Date().toLocaleDateString('es-ES')}
       </p>
 
-      <div className="space-y-6 text-text-2 leading-relaxed">
+      <div className="space-y-6 text-ink-2 leading-relaxed">
         <Section title="¿Qué datos recogemos?">
           Solo lo mínimo necesario: <b>email</b> (para tu cuenta) y <b>datos de pago</b>
           (procesados directamente por Stripe — nunca tocamos tu tarjeta).
@@ -49,7 +49,7 @@ export default function Privacy() {
             <li>Eliminación total de tu cuenta y datos</li>
             <li>Exportación en formato portable</li>
           </ul>
-          Escribe a <a href="mailto:privacidad@eclesiapresenter.com" className="text-copper-200 hover:text-copper-100 link-underline">privacidad@eclesiapresenter.com</a>.
+          Escribe a <a href="mailto:privacidad@eclesiapresenter.com" className="text-copper-200 hover:text-copper-100">privacidad@eclesiapresenter.com</a>.
         </Section>
 
         <Section title="Retención">
@@ -59,7 +59,7 @@ export default function Privacy() {
         </Section>
 
         <Section title="Contacto del DPO">
-          <a href="mailto:privacidad@eclesiapresenter.com" className="text-copper-200 hover:text-copper-100 link-underline">
+          <a href="mailto:privacidad@eclesiapresenter.com" className="text-copper-200 hover:text-copper-100">
             privacidad@eclesiapresenter.com
           </a>
         </Section>
@@ -71,7 +71,7 @@ export default function Privacy() {
 function Section({ title, children }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-text-1 mb-2">{title}</h2>
+      <h2 className="font-display text-2xl text-ink-1 mb-2">{title}</h2>
       <div>{children}</div>
     </section>
   )
