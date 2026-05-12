@@ -16,6 +16,8 @@
     "dist": "npm run build && electron-builder --win portable",
     "dist:installer": "npm run build && electron-builder --win nsis",
     "dist:all": "npm run build && electron-builder --win portable nsis",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -75,6 +77,37 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "EclesiaPresenter"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["arm64", "x64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "identity": null
+    },
+    "dmg": {
+      "title": "${productName} ${version}",
+      "writeUpdateInfo": false
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "AudioVideo",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "publish": null
   }

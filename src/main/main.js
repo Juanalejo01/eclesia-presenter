@@ -387,3 +387,9 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
+// macOS: si el user cierra todas las ventanas pero deja el icono en el Dock,
+// click en el icono debe reabrir la ventana principal (convención macOS).
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
+})

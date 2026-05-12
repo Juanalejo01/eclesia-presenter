@@ -1,0 +1,95 @@
+name: Build & Release
+
+# Se dispara cuando se hace push de un tag tipo v0.2.1, v0.3.0, etc.
+# Construye los binarios para Windows + macOS + Linux y los sube
+# como assets a la Release que coincida con ese tag.
+on:
+  push:
+    tags:
+      - 'v*'
+  # Permite ejecutar manualmente desde la UI de GitHub Actions
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag a buildear (ej: v0.2.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write  # necesario para subir assets a la Release
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: macos-latest
+            platform: mac
+          # Linux opcional — descomenta si lo quieres también
+          # - os: ubuntu-latest
+          #   platform: linux
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        # `npm ci` requiere lock + .npmrc consistente; better-sqlite3 compila
+        # nativamente para la plataforma de cada runner.
+        run: npm ci
+
+      - name: Build renderer
+        run: npm run build
+
+      # --- WINDOWS: portable + NSIS installer ---
+      - name: Build (Windows)
+        if: matrix.platform == 'win'
+        run: npx electron-builder --win portable nsis
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- MACOS: dmg (arm64 + x64) + zip ---
+      # Sin firma/notarización (identity: null en package.json). Los usuarios
+      # verán un aviso "no se puede verificar al desarrollador" la primera vez.
+      # Workaround para el usuario final: click derecho -> Abrir (solo la 1a vez).
+      - name: Build (macOS)
+        if: matrix.platform == 'mac'
+        run: npx electron-builder --mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      # --- LINUX: AppImage ---
+      - name: Build (Linux)
+        if: matrix.platform == 'linux'
+        run: npx electron-builder --linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ github.ref_name || inputs.tag }}
+          files: |
+            dist-electron/*.exe
+            dist-electron/*.dmg
+            dist-electron/*.zip
+            dist-electron/*.AppImage
+          fail_on_unmatched_files: false
+          generate_release_notes: false
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
