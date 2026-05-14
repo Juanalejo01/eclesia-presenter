@@ -43,6 +43,16 @@ contextBridge.exposeInMainWorld('electron', {
     info:          ()      => ipcRenderer.invoke('app:info'),
   },
 
+  // Servidor local embebido (mobile remote + OBS overlay)
+  server: {
+    info:    ()    => ipcRenderer.invoke('server:info'),
+    onRemoteEvent: (cb) => {
+      const handler = (_e, name) => cb(name)
+      ipcRenderer.on('remote:event', handler)
+      return () => ipcRenderer.removeListener('remote:event', handler)
+    },
+  },
+
   // Importación de biblias
   bibles: {
     import:         ()    => ipcRenderer.invoke('bibles:import'),

@@ -160,6 +160,9 @@ export default function TransmisionPanel() {
             )}
           </div>
 
+          {/* Control remoto móvil */}
+          <RemoteSection />
+
           {/* Guía OBS */}
           <div className="card" style={{ padding: 18 }}>
             <div className="section-h" style={{ marginBottom: 14 }}>
@@ -195,6 +198,89 @@ export default function TransmisionPanel() {
       {upgradeModal && (
         <UpgradeModal mode={upgradeModal} onClose={() => setUpgradeModal(null)} />
       )}
+    </div>
+  )
+}
+
+// ============================================================
+// RemoteSection — URL para conectar el teléfono al PC como mando
+// ============================================================
+function RemoteSection() {
+  const [info, setInfo] = useState(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!window.electron?.server) return
+    window.electron.server.info().then(setInfo).catch(() => {})
+  }, [])
+
+  if (!info) return null
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(info.remoteUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch {}
+  }
+
+  // QR generado via API pública (offline fallback: solo URL en texto)
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&color=f4e6d7&bgcolor=14100d&data=${encodeURIComponent(info.remoteUrl)}`
+
+  return (
+    <div className="card" style={{ padding: 18 }}>
+      <div className="section-h" style={{ marginBottom: 14 }}>
+        <h3>Control remoto desde el móvil</h3>
+        <span className="sub">beta · vía WiFi local</span>
+      </div>
+
+      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div style={{
+          width: 180, height: 180, flexShrink: 0,
+          background: 'var(--bg-2)', borderRadius: 12,
+          border: '1px solid var(--line-1)', padding: 8,
+          display: 'grid', placeItems: 'center',
+        }}>
+          <img
+            src={qrUrl}
+            width="160" height="160"
+            alt="QR code para control remoto"
+            onError={e => { e.currentTarget.style.display = 'none' }}
+          />
+        </div>
+
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <p style={{ fontSize: 13, color: 'var(--text-2)', margin: '0 0 12px', lineHeight: 1.55 }}>
+            Escanea el código QR con tu teléfono (o introduce la URL en el navegador móvil)
+            para usar tu móvil como mando: ←/→, blanco, negro, limpiar slide.
+            <br />
+            <span style={{ color: 'var(--text-3)', fontSize: 12 }}>
+              El móvil debe estar conectado al mismo WiFi que este PC.
+            </span>
+          </p>
+
+          <div style={{
+            display: 'flex', gap: 8, alignItems: 'center',
+            padding: '10px 14px', background: 'var(--bg-2)', borderRadius: 10,
+            border: '1px solid var(--line-1)', marginBottom: 8,
+          }}>
+            <code style={{
+              flex: 1, fontFamily: 'var(--font-mono)', fontSize: 13,
+              color: 'var(--copper-100)', overflow: 'hidden', textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {info.remoteUrl}
+            </code>
+            <button className="btn btn-ghost" onClick={copy} style={{ height: 28, fontSize: 11 }}>
+              {copied ? '✓ Copiado' : 'Copiar'}
+            </button>
+          </div>
+
+          <p style={{ fontSize: 11, color: 'var(--text-3)', margin: 0, fontFamily: 'var(--font-mono)' }}>
+            Puerto: {info.port} · IP local: {info.ip}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

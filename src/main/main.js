@@ -36,13 +36,29 @@ function createMainWindow() {
   mainWindow.on('closed', () => { mainWindow = null })
 }
 
+// Server local: se inicializa en app.whenReady. Lo guardamos en closure para
+// poder llamar a pushSlide / onRemoteEvent desde los handlers IPC.
+let serverHandle = null
+
 // IPC: enviar slide al proyector. Antes había un sistema legacy con
 // `presenterWindow` (otra BrowserWindow) que se cargó toda la app de nuevo.
 // Eliminado: ahora todo va al sistema moderno `projection` que abre
 // ventanas dedicadas (background fullscreen + overlay transparente para OBS).
 ipcMain.on('slide:send', (_event, slideData) => {
-  try { projection.setSlide(slideData) }
-  catch (e) { console.warn('projection.setSlide failed:', e.message) }
+  try { projection.setSlide(slideData) } catch (e) { console.warn('projection.setSlide failed:', e.message) }
+  // Push también al servidor para que los móviles conectados vean el slide
+  try { serverHandle?.pushSlide(slideData) } catch (e) { console.warn('server.pushSlide failed:', e.message) }
+})
+
+// Info del servidor local para mostrar QR/URL en la app
+ipcMain.handle('server:info', () => {
+  if (!serverHandle) return null
+  return {
+    ip: serverHandle.getLocalIP(),
+    port: serverHandle.port,
+    remoteUrl: `http://${serverHandle.getLocalIP()}:${serverHandle.port}/remote`,
+    overlayUrl: `http://${serverHandle.getLocalIP()}:${serverHandle.port}/overlay`,
+  }
 })
 
 // IPC: licencia (activación / validación / desactivación / estado)
@@ -388,7 +404,17 @@ app.whenReady().then(() => {
     callback({ path: fullPath })
   })
 
-  startServer()
+  serverHandle = startServer()
+  // Bridge: cuando el móvil dispara un comando, lo reenviamos a la mainWindow
+  // como evento IPC. App.jsx lo escucha y dispara la acción correspondiente.
+  serverHandle.onRemoteEvent((name) => {
+    try {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('remote:event', name)
+      }
+    } catch (e) { console.warn('remote bridge failed:', e.message) }
+  })
+
   createMainWindow()
 })
 

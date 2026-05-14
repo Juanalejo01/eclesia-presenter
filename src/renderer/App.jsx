@@ -12,7 +12,7 @@ import SlidePreview from './components/SlidePreview.jsx'
 import Topbar from './components/Topbar.jsx'
 import CommandPalette from './components/CommandPalette.jsx'
 import Settings from './components/Settings.jsx'
-import { useGlobalShortcuts, subscribe } from './hooks/useShortcuts.js'
+import { useGlobalShortcuts, subscribe, emit } from './hooks/useShortcuts.js'
 import { selectSlide, setLive, useSlideStore } from './services/slideStore.js'
 import { syncFromMain } from './services/themeStore.js'
 import { refreshImportedVersions } from './services/bibleService.js'
@@ -55,7 +55,19 @@ export default function App() {
         await window.electron.projection.open({ mode: 'background' })
       }
     })
-    return () => { offSettings(); offFullscreen() }
+
+    // Eventos del control remoto móvil → traducir a acciones de la app
+    const offRemote = window.electron?.server?.onRemoteEvent?.((name) => {
+      switch (name) {
+        case 'next':  emit('navigate:next'); break
+        case 'prev':  emit('navigate:prev'); break
+        case 'blank': setLive(BLANK_SLIDE); break
+        case 'black': setLive(BLACKOUT_SLIDE); break
+        case 'clear': setLive(null); break
+      }
+    })
+
+    return () => { offSettings(); offFullscreen(); offRemote?.() }
   }, [])
 
   useGlobalShortcuts({
