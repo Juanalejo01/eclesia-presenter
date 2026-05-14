@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import {
   IconBroadcast, IconExternal, IconMonitor, IconLayers, IconClock, IconRefresh,
+  IconKey, IconX,
 } from './Icons.jsx'
 import { useSlideStore } from '../services/slideStore.js'
 import { useTheme } from '../services/themeStore.js'
+import { useLicense } from '../services/licenseStore.js'
 
 /**
  * Panel "Transmisión" — estado de las salidas de proyección/streaming.
@@ -17,8 +19,12 @@ export default function TransmisionPanel() {
   const [uptime, setUptime]       = useState(Date.now())
   const [now, setNow]             = useState(Date.now())
   const [uptimeStarted, setUptimeStarted] = useState(false)
+  const [upgradeModal, setUpgradeModal] = useState(null) // 'overlay' | 'stage' | null
   const { live }  = useSlideStore()
   const theme     = useTheme()
+  const license   = useLicense()
+  const isProUser = !!license?.licensed &&
+                    ['pro_monthly', 'pro_yearly', 'lifetime'].includes(license?.plan)
 
   const refresh = async () => {
     if (!hasElectron) return
@@ -48,7 +54,15 @@ export default function TransmisionPanel() {
   const mm = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0')
   const ss = String(elapsed % 60).padStart(2, '0')
 
-  const open  = async (mode) => { await window.electron?.projection.open({ mode }); refresh() }
+  const open = async (mode) => {
+    // Feature gate: overlay + stage requieren Pro
+    if (!isProUser && (mode === 'overlay' || mode === 'stage')) {
+      setUpgradeModal(mode)
+      return
+    }
+    await window.electron?.projection.open({ mode })
+    refresh()
+  }
   const close = async (mode) => { await window.electron?.projection.close(mode); refresh() }
 
   return (
@@ -176,6 +190,80 @@ export default function TransmisionPanel() {
           </div>
 
         </div>
+      </div>
+
+      {upgradeModal && (
+        <UpgradeModal mode={upgradeModal} onClose={() => setUpgradeModal(null)} />
+      )}
+    </div>
+  )
+}
+
+// Modal "Función Pro" — aparece cuando un usuario Free intenta abrir overlay o stage.
+function UpgradeModal({ mode, onClose }) {
+  const features = {
+    overlay: {
+      title: 'Lower-Third para OBS',
+      desc: 'Banda transparente capturable por OBS Studio para tu transmisión en vivo. Versículos y letras de canciones con tu marca.',
+    },
+    stage: {
+      title: 'Stage Display',
+      desc: 'Pantalla dedicada para el músico o predicador con el slide actual, el reloj y notas. Va en un monitor secundario distinto al del proyector.',
+    },
+  }
+  const f = features[mode] || features.overlay
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}
+        style={{ width: 'min(540px, 95vw)', padding: 32, textAlign: 'center' }}>
+        <button onClick={onClose} className="btn btn-ghost"
+          style={{ position: 'absolute', top: 12, right: 12, padding: 6 }}>
+          <IconX size={16} />
+        </button>
+
+        <div style={{
+          width: 64, height: 64, margin: '0 auto 16px',
+          borderRadius: 16, display: 'grid', placeItems: 'center',
+          background: 'linear-gradient(135deg, rgba(232,181,145,0.25), rgba(168,95,51,0.15))',
+          border: '1px solid rgba(232,181,145,0.30)',
+        }}>
+          <IconKey size={28} style={{ color: 'var(--copper-200)' }} />
+        </div>
+
+        <div style={{
+          display: 'inline-block', padding: '4px 10px', borderRadius: 999,
+          background: 'linear-gradient(180deg, rgba(232,181,145,0.30), rgba(168,95,51,0.15))',
+          color: 'var(--copper-100)', fontSize: 10, fontWeight: 700,
+          letterSpacing: '0.15em', textTransform: 'uppercase',
+          marginBottom: 12, border: '1px solid rgba(232,181,145,0.25)',
+        }}>
+          Función Pro
+        </div>
+
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26,
+          color: 'var(--text-1)', margin: '0 0 10px', lineHeight: 1.2 }}>
+          {f.title}
+        </h2>
+        <p style={{ fontSize: 14, color: 'var(--text-2)', lineHeight: 1.6,
+          maxWidth: 420, margin: '0 auto 24px' }}>
+          {f.desc}
+        </p>
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+          <a href="https://eclesia-presenter.vercel.app/pricing" target="_blank" rel="noreferrer"
+            className="btn btn-primary" style={{ padding: '10px 22px' }}>
+            Ver planes Pro
+          </a>
+          <button onClick={onClose} className="btn btn-ghost" style={{ padding: '10px 22px' }}>
+            Más tarde
+          </button>
+        </div>
+
+        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 18 }}>
+          Si ya tienes Pro, activa tu clave en{' '}
+          <span style={{ color: 'var(--copper-200)' }}>Ajustes → Licencia</span>.
+        </p>
       </div>
     </div>
   )

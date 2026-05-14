@@ -104,6 +104,26 @@ export function getAllVersions() {
   return [...LOCAL_VERSIONS, ...importedVersions, ...remote]
 }
 
+// Biblias incluidas en el plan Free.
+// El resto requiere Pro.
+export const FREE_VERSION_IDS = ['rvr1960', 'nvi', 'rvr1909']
+
+/**
+ * Devuelve las versiones visibles para el usuario según su plan.
+ * - Pro: todas (locales + importadas + api.bible).
+ * - Free: solo las 3 del plan Free + las que el user importó manualmente
+ *         (esas son "suyas" — no las podemos quitar) + api.bible (su clave).
+ */
+export function getVisibleVersions(isPro) {
+  const all = getAllVersions()
+  if (isPro) return all
+  return all.filter(v =>
+    FREE_VERSION_IDS.includes(v.id) ||
+    v.type === 'imported' ||
+    v.type === 'apibible'  // si el user puso su API key, le dejamos usarla
+  )
+}
+
 export function getActiveVersion() {
   return getAllVersions().find(v => v.id === activeVersionId) || LOCAL_VERSIONS[0]
 }

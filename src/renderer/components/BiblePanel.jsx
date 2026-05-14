@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  getAllVersions, getActiveVersion, setActiveVersion,
+  getAllVersions, getVisibleVersions, getActiveVersion, setActiveVersion,
   getBooks, getChapter, getChapterCount, searchText, combineVerses,
 } from '../services/bibleService.js'
 import { normalizeText } from '../services/textUtils.js'
 import { subscribe } from '../hooks/useShortcuts.js'
 import { addItem as addToSchedule } from '../services/scheduleService.js'
 import { useT } from '../services/i18n.js'
+import { useLicense, isPro } from '../services/licenseStore.js'
 import { IconSearch, IconPlus, IconArrowRight } from './Icons.jsx'
 
 /**
@@ -18,7 +19,9 @@ import { IconSearch, IconPlus, IconArrowRight } from './Icons.jsx'
  */
 export default function BiblePanel({ onSendSlide }) {
   const t = useT()
-  const [versions, setVersions] = useState(getAllVersions())
+  const license = useLicense()
+  const pro = !!license && ['pro_monthly', 'pro_yearly', 'lifetime'].includes(license.plan)
+  const [versions, setVersions] = useState(getVisibleVersions(pro))
   const [versionId, setVersionId] = useState(getActiveVersion().id)
 
   const [books, setBooks]         = useState([])
@@ -39,14 +42,14 @@ export default function BiblePanel({ onSendSlide }) {
 
   // Cambio de versión
   useEffect(() => {
-    setVersions(getAllVersions())
+    setVersions(getVisibleVersions(pro))
     setActiveVersion(versionId)
     setLoading(true); setLoadError(null); setBooks([])
     setStep('book'); setSelectedBookIndex(null); setChapter(null)
     getBooks(versionId)
       .then(b => { setBooks(b); setLoading(false) })
       .catch(err => { setLoadError(err.message); setLoading(false) })
-  }, [versionId])
+  }, [versionId, pro])
 
   // Click sobre un libro
   const pickBook = async (bookIndex) => {
