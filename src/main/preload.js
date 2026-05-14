@@ -50,4 +50,13 @@ contextBridge.exposeInMainWorld('electron', {
     readImported:   (id)  => ipcRenderer.invoke('bibles:readImported', id),
     deleteImported: (id)  => ipcRenderer.invoke('bibles:deleteImported', id),
   },
+
+  // Licencia (Free / Pro). El renderer lee el plan para feature gates,
+  // y la pantalla de Ajustes → Licencia llama a activate/deactivate.
+  license: {
+    state:      ()    => ipcRenderer.invoke('license:state'),
+    activate:   (key) => ipcRenderer.invoke('license:activate', key),
+    deactivate: ()    => ipcRenderer.invoke('license:deactivate'),
+    validate:   ()    => ipcRenderer.invoke('license:validate'),
+  },
 })

@@ -4,6 +4,7 @@ const fs = require('fs')
 const { startServer } = require('../server/server')
 const db = require('./database')
 const projection = require('./projection')
+const license = require('./license')
 
 // app.isPackaged es true cuando se ejecuta el .exe instalado, false en `npm run dev`.
 // Es más fiable que NODE_ENV porque electron-builder no setea esa variable automáticamente.
@@ -43,6 +44,12 @@ ipcMain.on('slide:send', (_event, slideData) => {
   try { projection.setSlide(slideData) }
   catch (e) { console.warn('projection.setSlide failed:', e.message) }
 })
+
+// IPC: licencia (activación / validación / desactivación / estado)
+ipcMain.handle('license:state',       ()      => license.getState())
+ipcMain.handle('license:activate',    (_e, k) => license.activate(k))
+ipcMain.handle('license:deactivate',  ()      => license.deactivate())
+ipcMain.handle('license:validate',    ()      => license.validate())
 
 // IPC: proyección externa (overlay/background sin red, capturable por OBS)
 ipcMain.handle('projection:open',  (_e, opts)   => projection.openProjection(opts))
@@ -371,6 +378,7 @@ ipcMain.handle('bibles:deleteImported', (_e, id) => {
 
 app.whenReady().then(() => {
   db.init()
+  license.init()
 
   // Protocolo custom: media://archivo.mp4 → userData/media/archivo.mp4
   // Permite que las ventanas de proyección lean archivos locales sin file:// inseguro

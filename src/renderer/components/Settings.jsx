@@ -8,7 +8,7 @@ import { refreshImportedVersions } from '../services/bibleService.js'
 import { AVAILABLE_LOCALES } from '../services/i18n.js'
 import {
   IconX, IconImage, IconVideo, IconMonitor, IconBible, IconMusic,
-  IconBroadcast, IconSettings, IconUpload, IconTrash, IconCheck,
+  IconBroadcast, IconSettings, IconUpload, IconTrash, IconCheck, IconKey,
 } from './Icons.jsx'
 
 const SECTIONS = [
@@ -20,6 +20,7 @@ const SECTIONS = [
   { id: 'biblias',      label: 'Biblias',           Icon: IconBible },
   { id: 'canciones',    label: 'Canciones',         Icon: IconMusic },
   { id: 'apibible',     label: 'API Bible',         Icon: IconBible },
+  { id: 'licencia',     label: 'Licencia',          Icon: IconKey },
   { id: 'acerca',       label: 'Acerca de',         Icon: IconSettings },
 ]
 
@@ -75,6 +76,7 @@ export default function Settings({ onClose, onUpdate }) {
             {section === 'biblias'        && <SectionBiblias onUpdate={onUpdate} />}
             {section === 'canciones'      && <SectionCanciones onUpdate={onUpdate} />}
             {section === 'apibible'       && <SectionApiBible onUpdate={onUpdate} />}
+            {section === 'licencia'       && <SectionLicencia onUpdate={onUpdate} />}
             {section === 'acerca'         && <SectionAcerca />}
           </main>
         </div>
@@ -759,4 +761,235 @@ function SectionAcerca() {
       </div>
     </div>
   )
+}
+
+// ============================================================
+// Sección Licencia — activar / desactivar / ver estado del plan
+// ============================================================
+function SectionLicencia({ onUpdate }) {
+  const [state, setState] = useState(null)
+  const [key, setKey] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const refresh = async () => {
+    if (!window.electron?.license) return
+    const s = await window.electron.license.state()
+    setState(s)
+  }
+
+  useEffect(() => { refresh() }, [])
+
+  const PLAN_LABELS = {
+    free:         'Free',
+    pro_monthly:  'Pro Mensual',
+    pro_yearly:   'Pro Anual',
+    lifetime:     'Lifetime',
+  }
+
+  const onActivate = async () => {
+    setError(''); setSuccess(''); setLoading(true)
+    try {
+      const res = await window.electron.license.activate(key.trim())
+      if (res.ok) {
+        setSuccess(`¡Activada! Plan: ${PLAN_LABELS[res.plan] || res.plan}`)
+        setKey('')
+        await refresh()
+        if (onUpdate) onUpdate()
+      } else {
+        setError(translateError(res.error, res))
+      }
+    } catch (e) {
+      setError('Error de red. Verifica tu conexión a internet.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onDeactivate = async () => {
+    if (!confirm('¿Seguro? Este PC volverá a plan Free y liberará un slot para que actives otro equipo.')) return
+    setError(''); setSuccess(''); setLoading(true)
+    try {
+      const res = await window.electron.license.deactivate()
+      if (res.ok) {
+        setSuccess('PC desactivado correctamente.')
+        await refresh()
+        if (onUpdate) onUpdate()
+      } else {
+        setError(translateError(res.error, res))
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onValidate = async () => {
+    setError(''); setSuccess(''); setLoading(true)
+    try {
+      const res = await window.electron.license.validate()
+      if (res.ok) {
+        setSuccess('Licencia válida y al día.')
+        await refresh()
+      } else {
+        setError(translateError(res.reason, res))
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!state) {
+    return <div style={{ color: 'var(--text-3)' }}>Cargando...</div>
+  }
+
+  return (
+    <div>
+      <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-1)', margin: '0 0 6px' }}>
+        Licencia
+      </h2>
+      <p style={{ fontSize: 13, color: 'var(--text-3)', margin: '0 0 24px' }}>
+        Pega tu clave de licencia para desbloquear las funciones Pro.{' '}
+        <a href="https://eclesia-presenter.vercel.app/cuenta" target="_blank" rel="noreferrer"
+          style={{ color: 'var(--copper-200)' }}>
+          Obtener una clave →
+        </a>
+      </p>
+
+      {/* Estado actual */}
+      {state.licensed ? (
+        <div className="card" style={{
+          padding: 18, marginBottom: 24,
+          background: 'linear-gradient(180deg, rgba(168,95,51,0.10), rgba(128,64,18,0.04))',
+          border: '1px solid rgba(232,181,145,0.30)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <span style={{
+              padding: '3px 9px', borderRadius: 999, fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              background: '#1f5e3a', color: '#7df3a8',
+            }}>
+              {state.status === 'active' ? 'Activa' : state.status}
+            </span>
+            <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>
+              {PLAN_LABELS[state.plan] || state.plan}
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8, fontSize: 13, lineHeight: 1.7 }}>
+            <span style={{ color: 'var(--text-3)' }}>Clave</span>
+            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-1)' }}>{state.license_key}</span>
+
+            <span style={{ color: 'var(--text-3)' }}>Max. dispositivos</span>
+            <span style={{ color: 'var(--text-2)' }}>{state.max_devices}</span>
+
+            {state.expires_at && (
+              <>
+                <span style={{ color: 'var(--text-3)' }}>Renueva</span>
+                <span style={{ color: 'var(--text-2)' }}>{formatDate(state.expires_at)}</span>
+              </>
+            )}
+
+            <span style={{ color: 'var(--text-3)' }}>Este PC</span>
+            <span style={{ color: 'var(--text-2)' }}>{state.device_name} · {state.os}</span>
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, marginTop: 18 }}>
+            <button className="btn btn-ghost" onClick={onValidate} disabled={loading}>
+              Validar ahora
+            </button>
+            <button className="btn btn-ghost" onClick={onDeactivate} disabled={loading}
+              style={{ color: 'var(--danger, #e87575)' }}>
+              Desactivar este PC
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="card" style={{ padding: 18, marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <span style={{
+              padding: '3px 9px', borderRadius: 999, fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              background: 'var(--bg-2)', color: 'var(--text-3)', border: '1px solid var(--line-1)',
+            }}>
+              Free
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-2)' }}>
+              Sin licencia activa
+            </span>
+          </div>
+          <p style={{ fontSize: 13, color: 'var(--text-3)', margin: 0 }}>
+            Estás usando la versión gratuita: 3 biblias (RVR 1960, NVI, RVR 1909),
+            hasta 5 canciones, sin OBS Lower-Third ni Stage Display.
+          </p>
+        </div>
+      )}
+
+      {/* Activar */}
+      <div className="card" style={{ padding: 18 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)', margin: '0 0 12px' }}>
+          {state.licensed ? 'Cambiar de licencia' : 'Activar licencia Pro'}
+        </h3>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input
+            type="text"
+            value={key}
+            onChange={e => setKey(e.target.value.toUpperCase())}
+            placeholder="EP-XXXX-XXXX-XXXX-XXXX"
+            disabled={loading}
+            className="input"
+            style={{ flex: 1, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}
+            onKeyDown={e => { if (e.key === 'Enter' && key.length >= 20) onActivate() }}
+          />
+          <button className="btn btn-primary" onClick={onActivate}
+            disabled={loading || key.length < 20}>
+            {loading ? 'Activando...' : 'Activar'}
+          </button>
+        </div>
+
+        {error && (
+          <p style={{ color: 'var(--danger, #e87575)', fontSize: 12, marginTop: 10 }}>
+            ✕ {error}
+          </p>
+        )}
+        {success && (
+          <p style={{ color: '#7df3a8', fontSize: 12, marginTop: 10 }}>
+            ✓ {success}
+          </p>
+        )}
+
+        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 14, lineHeight: 1.5 }}>
+          La clave la encontrarás en{' '}
+          <a href="https://eclesia-presenter.vercel.app/cuenta" target="_blank" rel="noreferrer"
+            style={{ color: 'var(--copper-200)' }}>
+            tu panel de cuenta
+          </a>
+          {' '}tras completar el pago.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function translateError(code, data) {
+  switch (code) {
+    case 'formato_invalido':   return 'Formato inválido. Debe ser EP-XXXX-XXXX-XXXX-XXXX.'
+    case 'license_no_existe':  return 'No encontramos esa clave. Verifica que esté bien copiada.'
+    case 'license_inactiva':   return `Licencia inactiva (estado: ${data?.status}). Renueva el pago para reactivarla.`
+    case 'expirada':           return 'Tu suscripción expiró. Renuévala desde el panel de cuenta.'
+    case 'limite_devices':     return `Has alcanzado el máximo de PCs activos (${data?.current_devices}/${data?.max_devices}). Desactiva uno desde otro equipo o desde la web.`
+    case 'device_no_activado': return 'Este PC no aparece como activado. Vuelve a introducir la clave.'
+    case 'parametros_faltantes': return 'Faltan datos en la petición.'
+    case 'network_error':      return 'No se pudo conectar al servidor. Verifica tu conexión a internet.'
+    case 'server_error':       return 'Error del servidor. Intenta de nuevo en unos segundos.'
+    default:                   return `Error: ${code || 'desconocido'}`
+  }
+}
+
+function formatDate(iso) {
+  try {
+    const d = new Date(iso)
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  } catch { return iso }
 }

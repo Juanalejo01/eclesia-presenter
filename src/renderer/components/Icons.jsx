@@ -45,6 +45,7 @@ export const IconBroadcast = (p) => <Icon {...p}><circle cx="12" cy="12" r="2"/>
 export const IconBell = (p) => <Icon {...p}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></Icon>
 export const IconUpload = (p) => <Icon {...p}><path d="M12 16V4M5 11l7-7 7 7"/><path d="M5 20h14"/></Icon>
 export const IconClock = (p) => <Icon {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></Icon>
+export const IconKey = (p) => <Icon {...p}><circle cx="8" cy="15" r="4"/><path d="m10.85 12.15 9.65-9.65"/><path d="m18 5 1.5 1.5"/><path d="m15 8 1.5 1.5"/></Icon>
 
 // Brand monogram logo — copper-gradient stylized "E"
 export const LogoMonogram = ({ size = 28 }) => (
