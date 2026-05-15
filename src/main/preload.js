@@ -47,7 +47,7 @@ contextBridge.exposeInMainWorld('electron', {
   server: {
     info:    ()    => ipcRenderer.invoke('server:info'),
     onRemoteEvent: (cb) => {
-      const handler = (_e, name) => cb(name)
+      const handler = (_e, name, payload) => cb(name, payload)
       ipcRenderer.on('remote:event', handler)
       return () => ipcRenderer.removeListener('remote:event', handler)
     },

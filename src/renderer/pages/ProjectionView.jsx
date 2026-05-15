@@ -67,14 +67,18 @@ export default function ProjectionView() {
     )
   }
 
-  // Si no hay slide aún, mostramos placeholder discreto para que el usuario sepa
-  // que la ventana funciona (antes parecía "pantalla negra" si el tema era oscuro).
-  const showPlaceholder = !slide || slide.type === 'blank'
+  // El placeholder solo aparece cuando NO hay slide en absoluto (slide === null).
+  // Estados distintos:
+  //   slide === null         → "Esperando contenido" (el operador no ha empezado)
+  //   slide.type === 'blank' → pantalla con fondo del tema, SIN texto (B en presenters)
+  //   slide.type === 'blackout' → negro absoluto, sin fondo (cuando se quiere apagar)
+  //   slide normal           → renderiza el contenido
+  const showWaitingPlaceholder = !slide
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'transparent', userSelect: 'none' }}>
       <SlideRenderer slide={slide} theme={theme} />
-      {showPlaceholder && slide?.type !== 'blackout' && (
+      {showWaitingPlaceholder && (
         <div style={{
           position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
           pointerEvents: 'none', zIndex: 5,

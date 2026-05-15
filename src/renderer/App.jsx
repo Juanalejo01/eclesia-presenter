@@ -12,6 +12,7 @@ import SlidePreview from './components/SlidePreview.jsx'
 import Topbar from './components/Topbar.jsx'
 import CommandPalette from './components/CommandPalette.jsx'
 import Settings from './components/Settings.jsx'
+import SplashScreen from './components/SplashScreen.jsx'
 import { useGlobalShortcuts, subscribe, emit } from './hooks/useShortcuts.js'
 import { selectSlide, setLive, useSlideStore } from './services/slideStore.js'
 import { syncFromMain } from './services/themeStore.js'
@@ -36,6 +37,7 @@ export default function App() {
   const [settingsRev, setSettingsRev] = useState(0)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [splashDone, setSplashDone] = useState(false)
   const { live } = useSlideStore()
 
   useEffect(() => {
@@ -57,13 +59,28 @@ export default function App() {
     })
 
     // Eventos del control remoto móvil → traducir a acciones de la app
-    const offRemote = window.electron?.server?.onRemoteEvent?.((name) => {
+    const offRemote = window.electron?.server?.onRemoteEvent?.((name, payload) => {
       switch (name) {
         case 'next':  emit('navigate:next'); break
         case 'prev':  emit('navigate:prev'); break
         case 'blank': setLive(BLANK_SLIDE); break
         case 'black': setLive(BLACKOUT_SLIDE); break
         case 'clear': setLive(null); break
+
+        case 'bible-ref':
+          // Búsqueda libre desde móvil (ej. "salmos 22:1").
+          // Cambiamos al panel Biblia y emitimos un evento que BiblePanel escucha.
+          setActivePanel('bible')
+          // Pequeño delay para que el panel esté montado antes de buscar
+          setTimeout(() => emit('bible:remote-search', payload), 80)
+          break
+
+        case 'song':
+          // El móvil pidió proyectar una canción por id.
+          // Cambiamos al panel canciones y emitimos al SongsPanel.
+          setActivePanel('songs')
+          setTimeout(() => emit('songs:remote-project', payload), 80)
+          break
       }
     })
 
@@ -81,6 +98,7 @@ export default function App() {
 
   return (
     <>
+      {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}
       <div className="vignette" />
       <div className="app-shell">
         <Topbar

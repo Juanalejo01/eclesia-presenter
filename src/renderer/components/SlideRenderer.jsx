@@ -19,9 +19,12 @@ import SlideTransition from './SlideTransition.jsx'
  *                    transparente (ventana overlay de OBS). Cuando false,
  *                    pinta un patrón ajedrez (preview en el panel).
  */
-export default function SlideRenderer({ slide, theme, isBlackout = false, transparentBg = false }) {
+export default function SlideRenderer({ slide, theme, isBlackout: forceBlackout = false, transparentBg = false }) {
   // Mezcla: el slide puede sobreescribir aspectos visuales del tema global.
   const eff = mergeThemeWithSlide(theme, slide)
+
+  // Detectar blackout: por prop explícita (preview) o por el tipo del slide.
+  const isBlackout = forceBlackout || slide?.type === 'blackout'
 
   const showVideo = eff.bgType === 'video' && eff.bgVideo
   const showImage = eff.bgType === 'image' && eff.bgImage
@@ -117,10 +120,13 @@ export default function SlideRenderer({ slide, theme, isBlackout = false, transp
           }} />
       )}
       {!isBlank && <SlideTransition slide={slide} theme={eff} render={renderContent} />}
-      {isBlackout && (
+      {/* Etiqueta '⬛ BLACKOUT' solo en preview del editor (forceBlackout vía prop),
+          nunca en proyección real (donde isBlackout viene del slide.type). */}
+      {forceBlackout && (
         <div style={{
           position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
           color: 'var(--text-4)', fontFamily: 'var(--font-mono)', fontSize: 10,
+          pointerEvents: 'none', opacity: 0.4,
         }}>
           ⬛ BLACKOUT
         </div>

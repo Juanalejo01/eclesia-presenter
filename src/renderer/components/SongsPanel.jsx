@@ -92,6 +92,36 @@ export default function SongsPanel({ onSendSlide }) {
     return () => { offNext(); offPrev() }
   }, [selected, slideIndex, flatSlides.length])
 
+  // Cuando el móvil pide proyectar una canción por id, la seleccionamos y
+  // proyectamos la primera diapositiva (intro/estrofa 1) automáticamente.
+  useEffect(() => {
+    return subscribe('songs:remote-project', (payload) => {
+      const id = payload?.id
+      if (!id) return
+      // Si ya está cargada en `songs`, úsala; si no, refresca primero
+      const found = songs.find(s => s.id === id)
+      const doProject = (song) => {
+        if (!song) return
+        setSelected(song)
+        const slides = songToSlides(song, { maxLines: song.maxLines ?? 4 })
+        if (slides.length > 0) {
+          setSlideIndex(0)
+          setSectionIndex(slides[0].sectionIndex)
+          onSendSlide({
+            text: slides[0].text,
+            reference: slides[0].reference,
+            type: 'song',
+          })
+        }
+      }
+      if (found) doProject(found)
+      else listSongs({}).then(all => {
+        setSongs(all)
+        doProject(all.find(s => s.id === id))
+      })
+    })
+  }, [songs])
+
   return (
     <div className="workspace">
       <div className="ws-header">

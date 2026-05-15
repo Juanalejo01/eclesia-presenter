@@ -149,12 +149,12 @@ ipcMain.handle('media:addFiles', async (_e, sourcePaths = []) => {
   return added
 })
 
-// IPC: songs CRUD
+// IPC: songs CRUD — los handlers que MUTAN también sincronizan al server móvil.
 ipcMain.handle('songs:list',     (_e, opts)    => db.listSongs(opts))
 ipcMain.handle('songs:get',      (_e, id)      => db.getSong(id))
-ipcMain.handle('songs:create',   (_e, data)    => db.createSong(data))
-ipcMain.handle('songs:update',   (_e, id, data)=> db.updateSong(id, data))
-ipcMain.handle('songs:delete',   (_e, id)      => db.deleteSong(id))
+ipcMain.handle('songs:create',   (_e, data)    => { const r = db.createSong(data); syncSongsToServer(); return r })
+ipcMain.handle('songs:update',   (_e, id, data)=> { const r = db.updateSong(id, data); syncSongsToServer(); return r })
+ipcMain.handle('songs:delete',   (_e, id)      => { const r = db.deleteSong(id); syncSongsToServer(); return r })
 ipcMain.handle('songs:favorite', (_e, id)      => db.toggleFavorite(id))
 
 // --------- App utilities (settings) ---------
@@ -407,16 +407,32 @@ app.whenReady().then(() => {
   serverHandle = startServer()
   // Bridge: cuando el móvil dispara un comando, lo reenviamos a la mainWindow
   // como evento IPC. App.jsx lo escucha y dispara la acción correspondiente.
-  serverHandle.onRemoteEvent((name) => {
+  serverHandle.onRemoteEvent((name, payload) => {
     try {
       if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('remote:event', name)
+        mainWindow.webContents.send('remote:event', name, payload || null)
       }
     } catch (e) { console.warn('remote bridge failed:', e.message) }
   })
 
+  // Push inicial de la lista de canciones al server (para que la app móvil
+  // pueda mostrar la lista al conectarse).
+  try { serverHandle.pushSongs(db.listSongs({})) }
+  catch (e) { console.warn('pushSongs initial failed:', e.message) }
+
   createMainWindow()
 })
+
+// Refrescar la lista de canciones del server cada vez que se cree/edite/borre.
+// Es barato: la query es ~ms y los push solo afectan a clientes móviles conectados.
+function syncSongsToServer() {
+  if (!serverHandle) return
+  try { serverHandle.pushSongs(db.listSongs({})) } catch {}
+}
+
+// Wrap los IPC handlers existentes para que llamen syncSongsToServer despues.
+// (Nota: los handlers ya están registrados arriba; los re-wrapeamos abajo después
+// de definir syncSongsToServer.)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()

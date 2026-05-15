@@ -119,13 +119,98 @@ export default function BiblePanel({ onSendSlide }) {
     }
   }, [step])
 
-  // Enter en el buscador de libros: si hay UN resultado o más, va al primero
+  // Parser del query del buscador. Acepta:
+  //   "salmos"            → solo libro
+  //   "salmos 22"         → libro + capítulo
+  //   "salmos 22:1"       → libro + capítulo + versículo
+  //   "salmos 22 1"       → mismo que :1 (espacio en vez de :)
+  //   "salmos 22:1-5"     → rango de versículos
+  const parsedQuery = useMemo(() => {
+    if (!bookSearch?.trim()) return { bookText: '', chapter: null, verse: null, verseEnd: null }
+    // Unificar separadores ":" y "-"
+    const norm = bookSearch.trim().replace(/\s*:\s*/g, ' ').replace(/\s*-\s*/g, '-')
+    const tokens = norm.split(/\s+/)
+    const result = { bookText: '', chapter: null, verse: null, verseEnd: null }
+    // Quitar números (y rangos a-b) del final, en orden inverso
+    while (tokens.length > 0) {
+      const last = tokens[tokens.length - 1]
+      const rangeMatch = last.match(/^(\d+)-(\d+)$/)
+      if (rangeMatch) {
+        // Rango "1-5"
+        result.verseEnd = +rangeMatch[2]
+        result.verse   = +rangeMatch[1]
+        tokens.pop()
+      } else if (/^\d+$/.test(last)) {
+        if (result.verse == null && result.chapter == null) {
+          // primer número desde el final → si solo hay uno, es capítulo
+          result.chapter = +last
+        } else if (result.verse == null) {
+          // ya tenemos chapter, este es verse
+          result.verse = result.chapter
+          result.chapter = +last
+        }
+        tokens.pop()
+      } else {
+        break
+      }
+    }
+    result.bookText = tokens.join(' ')
+    return result
+  }, [bookSearch])
+
+  // Función auxiliar para navegar directo a libro+capítulo+versículo
+  const goToReference = async (bookIndex, chapter, verse, verseEnd) => {
+    setSelectedBookIndex(bookIndex)
+    const count = await getChapterCount(bookIndex, versionId)
+    setMaxChapters(count)
+
+    if (!chapter || chapter > count) {
+      // Solo libro → mostrar capítulos
+      setChapterNum(1)
+      setSelectedVerses([])
+      setStep('chapter')
+      return
+    }
+
+    setChapterNum(chapter)
+    setChapterLoading(true)
+    try {
+      const c = await getChapter(bookIndex, chapter, versionId)
+      setChapter(c)
+      setChapterLoading(false)
+      if (verse && verse <= c.verses.length) {
+        // Seleccionar versículo o rango
+        if (verseEnd && verseEnd >= verse && verseEnd <= c.verses.length) {
+          const range = []
+          for (let i = verse; i <= verseEnd; i++) range.push(i)
+          setSelectedVerses(range)
+        } else {
+          setSelectedVerses([verse])
+        }
+      } else {
+        setSelectedVerses([])
+      }
+      setStep('verse')
+    } catch (err) {
+      setLoadError(err.message)
+      setChapterLoading(false)
+    }
+  }
+
+  // Enter en el buscador: navega según lo que se haya tipeado
   const onBookSearchKey = (e) => {
     if (e.key === 'Enter') {
       const first = filteredBooks[0]
-      if (first) pickBook(first.index)
+      if (!first) return
+      e.preventDefault()
+      if (parsedQuery.chapter || parsedQuery.verse) {
+        goToReference(first.index, parsedQuery.chapter, parsedQuery.verse, parsedQuery.verseEnd)
+        setBookSearch('')
+      } else {
+        pickBook(first.index)
+        setBookSearch('')
+      }
     } else if (e.key === 'Escape' && bookSearch) {
-      // ESC primero limpia el filtro, segundo desfocus
       e.stopPropagation()
       setBookSearch('')
     }
@@ -139,6 +224,41 @@ export default function BiblePanel({ onSendSlide }) {
     }, 300)
     return () => clearTimeout(t)
   }, [textSearch, versionId])
+
+  // Búsqueda lanzada desde el móvil (`socket → App → emit('bible:remote-search')`).
+  // El móvil envía algo tipo `{ query: "salmos 22:1" }`; nosotros lo parseamos
+  // con la misma logica del buscador local y navegamos automáticamente.
+  useEffect(() => {
+    return subscribe('bible:remote-search', (payload) => {
+      const query = payload?.query?.trim()
+      if (!query) return
+      // Parsear igual que parsedQuery
+      const norm = query.replace(/\s*:\s*/g, ' ').replace(/\s*-\s*/g, '-')
+      const tokens = norm.split(/\s+/)
+      let chapter = null, verse = null, verseEnd = null
+      while (tokens.length > 0) {
+        const last = tokens[tokens.length - 1]
+        const rangeMatch = last.match(/^(\d+)-(\d+)$/)
+        if (rangeMatch) { verseEnd = +rangeMatch[2]; verse = +rangeMatch[1]; tokens.pop() }
+        else if (/^\d+$/.test(last)) {
+          if (verse == null && chapter == null) chapter = +last
+          else if (verse == null) { verse = chapter; chapter = +last }
+          tokens.pop()
+        } else break
+      }
+      const bookText = tokens.join(' ')
+      if (!bookText) return
+      const q = normalizeText(bookText)
+      const match = books.find(b => normalizeText(b.name).includes(q))
+      if (match) {
+        goToReference(match.index, chapter, verse, verseEnd)
+      } else {
+        // No encontramos libro: lo dejamos como filtro escrito en el buscador
+        // para que el usuario vea el estado.
+        setBookSearch(query)
+      }
+    })
+  }, [books, versionId])
 
   // Envío al live cuando cambian versículos seleccionados.
   // Si el texto excede ~280 caracteres, se divide en N sub-slides
@@ -215,10 +335,11 @@ export default function BiblePanel({ onSendSlide }) {
   }, [step, chapter, chapterNum, maxChapters, selectedVerses, selectedBookIndex, verseSlides, verseSlideIdx])
 
   const filteredBooks = useMemo(() => {
-    if (!bookSearch) return books
-    const q = normalizeText(bookSearch)
+    const text = parsedQuery.bookText
+    if (!text) return books
+    const q = normalizeText(text)
     return books.filter(b => normalizeText(b.name).includes(q))
-  }, [books, bookSearch])
+  }, [books, parsedQuery.bookText])
 
   const activeVersion = versions.find(v => v.id === versionId)
   const isRemote = activeVersion?.type === 'apibible'
@@ -332,7 +453,7 @@ export default function BiblePanel({ onSendSlide }) {
                     <input
                       ref={bookSearchRef}
                       autoFocus
-                      placeholder={t('bible.searchBook') + ' — escribe "sal" + Enter'}
+                      placeholder='ej: "sal", "salmos 22", "salmos 22:1", "juan 3 16"'
                       value={bookSearch}
                       onChange={e => setBookSearch(e.target.value)}
                       onKeyDown={onBookSearchKey}
@@ -344,6 +465,9 @@ export default function BiblePanel({ onSendSlide }) {
                         letterSpacing: '0.06em', pointerEvents: 'none',
                       }}>
                         ↵ {filteredBooks[0].name}
+                        {parsedQuery.chapter ? ` ${parsedQuery.chapter}` : ''}
+                        {parsedQuery.verse ? `:${parsedQuery.verse}` : ''}
+                        {parsedQuery.verseEnd ? `-${parsedQuery.verseEnd}` : ''}
                       </span>
                     )}
                   </div>
