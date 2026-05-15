@@ -1,49 +1,14 @@
 import Link from 'next/link'
+import { getDocsBySection, DOCS } from './_data/docs.js'
 
 export const metadata = {
   title: 'Documentación — EclesiaPresenter',
+  description: 'Guías paso a paso, vídeo-tutoriales y troubleshooting para EclesiaPresenter.',
 }
 
-const SECTIONS = [
-  {
-    title: 'Primeros pasos',
-    items: [
-      { href: '/docs/instalacion', label: 'Instalación y primer arranque' },
-      { href: '/docs/atajos', label: 'Atajos de teclado' },
-      { href: '/docs/biblia', label: 'Cómo usar el panel Biblia' },
-      { href: '/docs/canciones', label: 'Crear y editar canciones' },
-    ],
-  },
-  {
-    title: 'Proyección y streaming',
-    items: [
-      { href: '/docs/obs', label: 'Captura OBS con lower-third' },
-      { href: '/docs/dos-pantallas', label: 'Configurar 2 monitores' },
-      { href: '/docs/stage-display', label: 'Stage Display para el músico' },
-      { href: '/docs/transiciones', label: 'Transiciones entre slides' },
-    ],
-  },
-  {
-    title: 'Configuración',
-    items: [
-      { href: '/docs/temas', label: 'Personalizar el tema visual' },
-      { href: '/docs/idiomas', label: 'Cambiar idioma de la app' },
-      { href: '/docs/almacenamiento', label: 'Carpetas y rutas de archivos' },
-      { href: '/docs/biblias-custom', label: 'Importar biblias propias' },
-    ],
-  },
-  {
-    title: 'Cuenta y pagos',
-    items: [
-      { href: '/docs/cuenta', label: 'Gestionar tu cuenta' },
-      { href: '/docs/licencias', label: 'Activar / mover licencias entre PCs' },
-      { href: '/docs/facturacion', label: 'Facturación y pagos' },
-      { href: '/docs/backups', label: 'Hacer backup de canciones' },
-    ],
-  },
-]
-
 export default function DocsPage() {
+  const sections = getDocsBySection()
+
   return (
     <div className="container mx-auto px-6 py-20 max-w-5xl">
       <div className="text-center mb-16">
@@ -54,22 +19,30 @@ export default function DocsPage() {
           Aprende a usar <em className="italic text-copper-200">EclesiaPresenter</em>
         </h1>
         <p className="text-ink-2 text-lg">
-          Guías paso a paso · vídeo-tutoriales · troubleshooting.
+          Guías paso a paso · {DOCS.length} artículos · cobertura completa de la app.
         </p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
-        {SECTIONS.map((s, i) => (
+        {sections.map((s, i) => (
           <div key={i} className="rounded-xl border border-copper-300/10 bg-bg-2 p-6">
-            <h2 className="font-display text-2xl text-ink-1 mb-4">{s.title}</h2>
-            <ul className="space-y-2 text-sm">
-              {s.items.map((item, j) => (
-                <li key={j}>
+            <h2 className="font-display text-2xl text-ink-1 mb-1">{s.title}</h2>
+            <p className="text-xs font-mono text-ink-3 mb-5 uppercase tracking-widest">
+              {s.items.length} artículo{s.items.length === 1 ? '' : 's'}
+            </p>
+            <ul className="space-y-3 text-sm">
+              {s.items.map(doc => (
+                <li key={doc.slug}>
                   <Link
-                    href={item.href}
-                    className="text-ink-2 hover:text-copper-200 transition-colors"
+                    href={`/docs/${doc.slug}`}
+                    className="block group"
                   >
-                    {item.label}
+                    <div className="text-ink-1 group-hover:text-copper-200 transition-colors font-medium">
+                      {doc.title}
+                    </div>
+                    {doc.summary && (
+                      <div className="text-xs text-ink-3 mt-0.5">{doc.summary}</div>
+                    )}
                   </Link>
                 </li>
               ))}
@@ -78,20 +51,48 @@ export default function DocsPage() {
         ))}
       </div>
 
-      <div className="mt-16 text-center rounded-2xl border border-copper-300/10 bg-bg-2 p-10">
-        <h3 className="font-display text-2xl text-ink-1 mb-3">
+      {/* Quick start callout */}
+      <div className="mt-12 rounded-2xl border-2 border-copper-300/30
+                      bg-gradient-to-br from-copper-300/10 to-bg-2 p-8">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="flex-1">
+            <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-2">
+              ¿Es tu primera vez?
+            </div>
+            <h3 className="font-display text-2xl text-ink-1 mb-2">
+              Empieza por la <Link href="/docs/instalacion" className="text-copper-200 hover:text-copper-100">guía de instalación</Link>
+            </h3>
+            <p className="text-ink-2 text-sm">
+              Te lleva paso a paso desde la descarga hasta el primer proyector funcionando — en unos 5 minutos.
+            </p>
+          </div>
+          <Link
+            href="/docs/instalacion"
+            className="inline-flex items-center justify-center h-11 px-6 rounded-lg
+                       bg-gradient-to-b from-copper-200 to-copper-300
+                       text-[#1a0e08] font-semibold hover:from-copper-100 hover:to-copper-200 transition-all
+                       whitespace-nowrap"
+          >
+            Empezar →
+          </Link>
+        </div>
+      </div>
+
+      {/* Contact support */}
+      <div className="mt-8 text-center rounded-xl border border-copper-300/10 bg-bg-2 p-8">
+        <h3 className="font-display text-xl text-ink-1 mb-2">
           ¿No encuentras lo que buscas?
         </h3>
-        <p className="text-ink-2 mb-6">
-          Escríbenos directamente y te ayudamos.
+        <p className="text-ink-2 mb-5 text-sm">
+          Escríbenos directamente y te ayudamos en menos de 24h.
         </p>
         <a
           href="mailto:hola@eclesiapresenter.com"
-          className="inline-flex items-center justify-center h-11 px-6 rounded-lg
-                     bg-gradient-to-b from-copper-200 to-copper-300
-                     text-[#1a0e08] font-semibold hover:from-copper-100 hover:to-copper-200 transition-all"
+          className="inline-flex items-center justify-center h-10 px-5 rounded-lg
+                     border border-copper-300/30 bg-bg-3 text-ink-1 text-sm font-medium
+                     hover:bg-bg-4 hover:text-copper-100 transition-all"
         >
-          Contactar soporte
+          hola@eclesiapresenter.com
         </a>
       </div>
     </div>
