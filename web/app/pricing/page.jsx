@@ -87,7 +87,7 @@ const PLANS = [
 export default function PricingPage() {
   return (
     <div className="container mx-auto px-6 py-20 max-w-7xl">
-      <div className="text-center mb-16">
+      <div className="text-center mb-12">
         <div className="text-xs font-mono uppercase tracking-widest text-copper-200 mb-3">
           Precios honestos
         </div>
@@ -97,6 +97,30 @@ export default function PricingPage() {
         <p className="max-w-2xl mx-auto text-ink-2 text-lg">
           Empieza gratis. Actualiza cuando tu iglesia crezca. Sin sorpresas en la factura.
         </p>
+      </div>
+
+      {/* Banner del cupón TESTING — primeros 50 usuarios */}
+      <div className="max-w-4xl mx-auto mb-12 rounded-2xl border border-copper-300/40
+                      bg-gradient-to-r from-copper-300/15 via-copper-300/10 to-bg-2
+                      p-5 md:p-6 flex flex-col md:flex-row items-center gap-5">
+        <div className="flex-shrink-0">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-copper-200 to-copper-300
+                          grid place-items-center text-[#1a0e08] font-bold text-xl">
+            %
+          </div>
+        </div>
+        <div className="flex-1 text-center md:text-left">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-copper-200 mb-1">
+            Programa beta · solo los 50 primeros usuarios
+          </div>
+          <h3 className="font-display text-xl text-ink-1 mb-1">
+            Cupón <code className="bg-bg-3 px-2 py-0.5 rounded font-mono text-copper-100">TESTING</code> — 30% off durante 2 meses
+          </h3>
+          <p className="text-sm text-ink-3 m-0">
+            Aplicable a Pro Mensual y Pro Anual. Pégalo en el checkout cuando vayas a pagar.
+            A cambio te pedimos un testimonio breve.
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -152,6 +176,55 @@ export default function PricingPage() {
             </Link>
           </div>
         ))}
+      </div>
+
+      {/* Plan ENTERPRISE / Iglesia Grande — banner full-width abajo de los 4 cards */}
+      <div className="mt-10 rounded-2xl border border-copper-300/25
+                      bg-gradient-to-br from-bg-2 via-bg-2 to-copper-300/[0.06]
+                      p-8 md:p-10">
+        <div className="grid md:grid-cols-[1fr_auto] gap-8 items-center">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-copper-200">
+                Plan Iglesia Grande · &gt; 5 PCs
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-bg-3 text-[9px] font-mono uppercase tracking-widest text-ink-3 border border-copper-300/15">
+                A medida
+              </span>
+            </div>
+            <h2 className="font-display text-3xl md:text-4xl text-ink-1 mb-3">
+              ¿Iglesia con varios campus, multi-sede o ministerios?
+            </h2>
+            <p className="text-ink-2 text-sm md:text-base leading-relaxed mb-4 max-w-2xl">
+              Para iglesias grandes que necesitan más de 5 PCs simultáneos, formación a operadores,
+              SLA de respuesta, integración con tu sistema de gestión o branding personalizado.
+              Diseñamos un paquete a medida.
+            </p>
+            <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-ink-2 max-w-2xl">
+              <li className="flex items-start gap-2"><span className="text-copper-200 mt-0.5">✓</span> Licencias para N PCs simultáneos</li>
+              <li className="flex items-start gap-2"><span className="text-copper-200 mt-0.5">✓</span> Onboarding y formación al equipo</li>
+              <li className="flex items-start gap-2"><span className="text-copper-200 mt-0.5">✓</span> Soporte prioritario por WhatsApp/Email</li>
+              <li className="flex items-start gap-2"><span className="text-copper-200 mt-0.5">✓</span> Personalización del tema con vuestra identidad</li>
+              <li className="flex items-start gap-2"><span className="text-copper-200 mt-0.5">✓</span> SLA de respuesta &lt; 4 horas en días de servicio</li>
+              <li className="flex items-start gap-2"><span className="text-copper-200 mt-0.5">✓</span> Facturación anual con tu razón social</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-3 md:items-end">
+            <Link
+              href="/contacto?asunto=iglesia-grande"
+              className="inline-flex items-center justify-center h-12 px-7 rounded-lg
+                         bg-gradient-to-b from-copper-200 to-copper-300
+                         text-[#1a0e08] font-semibold text-base
+                         hover:from-copper-100 hover:to-copper-200 transition-all
+                         whitespace-nowrap">
+              Solicitar presupuesto →
+            </Link>
+            <span className="text-xs text-ink-3 font-mono">
+              Respuesta en &lt; 24h hábiles
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* FAQ */}

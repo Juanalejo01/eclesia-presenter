@@ -1,6 +1,6 @@
 import {
   IconBible, IconMusic, IconList, IconProjector,
-  IconImage, IconVideo, IconType, IconBroadcast,
+  IconImage, IconVideo, IconType, IconBroadcast, IconTools,
 } from './Icons.jsx'
 import { useT } from '../services/i18n.js'
 
@@ -11,6 +11,7 @@ const NAV = [
   { id: 'image',       i18nKey: 'nav.image',       Icon: IconImage,                shortcut: '4' },
   { id: 'video',       i18nKey: 'nav.video',       Icon: IconVideo,                shortcut: '5' },
   { id: 'text',        i18nKey: 'nav.text',        Icon: IconType,                 shortcut: '6' },
+  { id: 'tools',       label: 'Herramientas',      Icon: IconTools,                shortcut: 'T' },
   { id: 'projection',  i18nKey: 'nav.projection',  Icon: IconProjector,            shortcut: '7' },
   { id: 'transmision', i18nKey: 'nav.transmision', Icon: IconBroadcast,            shortcut: '8' },
 ]
@@ -19,8 +20,8 @@ export default function Sidebar({ active, onChange }) {
   const t = useT()
   return (
     <aside className="sidebar">
-      {NAV.map(({ id, i18nKey, Icon, badge, shortcut }) => {
-        const label = t(i18nKey)
+      {NAV.map(({ id, i18nKey, label: labelFixed, Icon, badge, shortcut }) => {
+        const label = labelFixed || t(i18nKey)
         return (
           <button
             key={id}

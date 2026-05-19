@@ -7,6 +7,7 @@ import ProjectionPanel from './components/ProjectionPanel.jsx'
 import ImagePanel from './components/ImagePanel.jsx'
 import VideoPanel from './components/VideoPanel.jsx'
 import TextPanel from './components/TextPanel.jsx'
+import ToolsPanel from './components/ToolsPanel.jsx'
 import TransmisionPanel from './components/TransmisionPanel.jsx'
 import SlidePreview from './components/SlidePreview.jsx'
 import Topbar from './components/Topbar.jsx'
@@ -25,6 +26,7 @@ const PANELS = {
   image:       ImagePanel,
   video:       VideoPanel,
   text:        TextPanel,
+  tools:       ToolsPanel,
   projection:  ProjectionPanel,
   transmision: TransmisionPanel,
 }

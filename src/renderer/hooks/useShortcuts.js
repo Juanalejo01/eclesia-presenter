@@ -69,6 +69,7 @@ export const SHORTCUT_LIST = [
   { keys: ['Ctrl', 'I'], action: 'Imágenes',         category: 'panel' },
   { keys: ['Ctrl', 'H'], action: 'Videos',           category: 'panel' },
   { keys: ['Ctrl', '6'], action: 'Texto libre',      category: 'panel' },
+  { keys: ['Ctrl', 'T'], action: 'Herramientas',     category: 'panel' },
   { keys: ['Ctrl', 'Q'], action: 'Proyección',       category: 'panel' },
   { keys: ['Ctrl', '8'], action: 'Transmisión',      category: 'panel' },
   { keys: ['Ctrl', 'M'], action: 'Abrir Menú',       category: 'global' },
@@ -122,6 +123,7 @@ export function useGlobalShortcuts({ onPanelChange, onBlank, onClearSlide, onOpe
           n: 'songs',
           i: 'image',
           h: 'video',
+          t: 'tools',
           q: 'projection',
         }
         if (LETTER_TO_PANEL[key]) {

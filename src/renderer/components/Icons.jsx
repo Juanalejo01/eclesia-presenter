@@ -46,6 +46,11 @@ export const IconBell = (p) => <Icon {...p}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9
 export const IconUpload = (p) => <Icon {...p}><path d="M12 16V4M5 11l7-7 7 7"/><path d="M5 20h14"/></Icon>
 export const IconClock = (p) => <Icon {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></Icon>
 export const IconKey = (p) => <Icon {...p}><circle cx="8" cy="15" r="4"/><path d="m10.85 12.15 9.65-9.65"/><path d="m18 5 1.5 1.5"/><path d="m15 8 1.5 1.5"/></Icon>
+export const IconTools = (p) => <Icon {...p}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></Icon>
+export const IconHourglass = (p) => <Icon {...p}><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></Icon>
+export const IconTimer = (p) => <Icon {...p}><circle cx="12" cy="14" r="8"/><path d="M5 2l-2 2M19 2l2 2M9 1h6M12 11v3l2 2"/></Icon>
+export const IconDice = (p) => <Icon {...p}><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="16" cy="16" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></Icon>
+export const IconWheel = (p) => <Icon {...p}><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M5.6 18.4 18.4 5.6"/></Icon>
 
 // Brand monogram logo — copper-gradient stylized "E"
 export const LogoMonogram = ({ size = 28 }) => (
