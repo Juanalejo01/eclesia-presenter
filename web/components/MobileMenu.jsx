@@ -35,11 +35,11 @@ export default function MobileMenu({ user }) {
 
   return (
     <>
-      {/* Botón trigger — solo visible en móvil */}
+      {/* Botón trigger — visible debajo de lg (móvil, tablets y laptops 770-1023) */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Abrir menú"
-        className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md
+        className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md
                    text-ink-1 hover:bg-bg-2 transition-colors"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -50,9 +50,9 @@ export default function MobileMenu({ user }) {
         </svg>
       </button>
 
-      {/* Overlay + panel — fixed full-screen */}
+      {/* Overlay + panel — fixed full-screen, oculto a partir de lg */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-[100]">
+        <div className="lg:hidden fixed inset-0 z-[100]">
           <div
             className="absolute inset-0 bg-bg-0/85 backdrop-blur-md"
             onClick={() => setOpen(false)}
