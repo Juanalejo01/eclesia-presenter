@@ -38,18 +38,33 @@ const isDev = !app.isPackaged
 let mainWindow = null
 
 function createMainWindow() {
+  // Buscar el icono empaquetado. En dev: build/icon.ico. En producción: el
+  // empaquetador lo embebe en el .exe pero igualmente lo asignamos a la
+  // BrowserWindow para que aparezca en la barra de tareas y Alt+Tab.
+  const iconPath = path.join(__dirname, '../../build/icon.ico')
+  const iconExists = (() => { try { return fs.existsSync(iconPath) } catch { return false } })()
+
   mainWindow = new BrowserWindow({
+    // Tamaño inicial razonable para cuando el usuario "restaura" la ventana
     width: 1280,
     height: 800,
     minWidth: 1024,
     minHeight: 600,
+    show: false,  // no mostrar hasta que esté maximizada (evita "salto" visible)
     title: 'EclesiaPresenter',
+    ...(iconExists ? { icon: iconPath } : {}),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   })
+
+  // Arrancar maximizada (ocupa el área visible respetando la barra de tareas).
+  // No usamos fullscreen (que oculta la barra de tareas) — esto se siente
+  // como una app de escritorio normal pero al 100%.
+  mainWindow.maximize()
+  mainWindow.show()
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
